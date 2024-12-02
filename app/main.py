@@ -31,20 +31,26 @@ def read_root():
 
 # Caregivers Management
 @app.post("/caregivers")
-def add_caregiver(name: str, id: int):
+def add_caregiver(name: str, id: int, bank_name: str, bank_account: str):
     # Ensure caregiver ID is unique
     if id in caregiver_reports:
         raise HTTPException(status_code=400, detail="Caregiver already exists")
-    caregivers.append({"name": name, "id": id})
+    
+    # Add caregiver details
+    caregivers.append({"name": name, "id": id, "bank_name": bank_name, "bank_account": bank_account})
+    
+    # Initialize caregiver report
     caregiver_reports[id] = {
         "name": name,
+        "bank_name": bank_name,
+        "bank_account": bank_account,
         "salary": {"price": 0, "amount": 0, "total": 0},
         "saturday": {"price": 0, "amount": 0, "total": 0},
         "allowance": {"price": 0, "amount": 0, "total": 0},
         "total_bank": 0
     }
-    caregiver_tasks[id] = []
-    return {"message": f"Caregiver {name} added successfully"}
+    
+    return {"message": f"Caregiver {name} added successfully with bank details"}
 
 @app.get("/caregivers")
 def get_caregivers():
