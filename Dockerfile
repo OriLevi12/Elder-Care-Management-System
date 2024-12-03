@@ -1,13 +1,16 @@
 FROM python:3.10-slim
 
-WORKDIR /app
+# Set the working directory to the root directory
+WORKDIR /
 
-COPY app/requirements.txt requirements.txt
+# Copy requirements.txt to the working directory
+COPY requirements.txt .
 
-RUN pip install -r requirements.txt
+# Install the dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app/ .
+# Copy the entire project to the working directory
+COPY . .
 
+# Command to run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-
-
