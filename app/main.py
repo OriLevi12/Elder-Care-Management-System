@@ -33,7 +33,7 @@ def read_root():
 @app.post("/caregivers")
 def add_caregiver(name: str, id: int, bank_name: str, bank_account: str):
     # Ensure caregiver ID is unique
-    if id in caregiver_reports:
+    if id in caregiver_reports or id in caregiver_tasks:
         raise HTTPException(status_code=400, detail="Caregiver already exists")
     
     # Add caregiver details
@@ -49,13 +49,39 @@ def add_caregiver(name: str, id: int, bank_name: str, bank_account: str):
         "allowance": {"price": 0, "amount": 0, "total": 0},
         "total_bank": 0
     }
-    
+
+    # Initialize caregiver tasks
+    caregiver_tasks[id] = []  # Add an empty task list for the caregiver
+
     return {"message": f"Caregiver {name} added successfully with bank details"}
 
 @app.get("/caregivers")
 def get_caregivers():
     # Retrieve the list of all caregivers
     return {"caregivers": caregivers}
+
+@app.post("/caregivers/{id}/tasks")
+def add_task_to_caregiver(id: int, task: str):
+    if id not in caregiver_tasks:
+        raise HTTPException(status_code=404, detail="Caregiver not found")
+    caregiver_tasks[id].append({"task": task, "status": "pending"})
+    return {"message": f"Task '{task}' added for caregiver {id}!"}
+
+@app.get("/caregivers/{id}/tasks")
+def get_tasks_for_caregiver(id: int):
+    if id not in caregiver_tasks:
+        raise HTTPException(status_code=404, detail="Caregiver not found")
+    return {"tasks": caregiver_tasks[id]}
+
+@app.put("/caregivers/{id}/update-task-status")
+def update_task_status_for_caregiver(id: int, task: str, status: str):
+    if id not in caregiver_tasks:
+        raise HTTPException(status_code=404, detail="Caregiver not found")
+    for t in caregiver_tasks[id]:
+        if t["task"] == task:
+            t["status"] = status
+            return {"message": f"Task '{task}' updated for caregiver {id}!"}
+    raise HTTPException(status_code=404, detail="Task not found")
 
 @app.put("/caregivers/{id}/update-all")
 def update_all(id: int, salary_price: float = 0, salary_amount: int = 0,
@@ -130,6 +156,42 @@ def generate_pdf(id: int):
     pdf.output(pdf_path)
 
     return FileResponse(pdf_path, media_type="application/pdf", filename=f"caregiver_{id}_report.pdf")
+
+# Elderly Management
+@app.post("/elderly")
+def add_elderly(name: str, id: int):
+    if id in tasks_for_elderly:
+        raise HTTPException(status_code=400, detail="Elderly person already exists")
+    elderly.append({"name": name, "id": id})
+    tasks_for_elderly[id] = []  # Initialize tasks for this elderly person
+    return {"message": f"Elderly person {name} added successfully"}
+
+@app.get("/elderly")
+def get_elderly():
+    return {"elderly": elderly}
+
+@app.post("/elderly/{id}/tasks")
+def add_task_to_elderly(id: int, task: str):
+    if id not in tasks_for_elderly:
+        raise HTTPException(status_code=404, detail="Elderly person not found")
+    tasks_for_elderly[id].append({"task": task, "status": "pending"})
+    return {"message": f"Task '{task}' added for elderly {id}!"}
+
+@app.get("/elderly/{id}/tasks")
+def get_tasks_for_elderly(id: int):
+    if id not in tasks_for_elderly:
+        raise HTTPException(status_code=404, detail="Elderly person not found")
+    return {"tasks": tasks_for_elderly[id]}
+
+@app.put("/elderly/{id}/update-task-status")
+def update_task_status_for_elderly(id: int, task: str, status: str):
+    if id not in tasks_for_elderly:
+        raise HTTPException(status_code=404, detail="Elderly person not found")
+    for t in tasks_for_elderly[id]:
+        if t["task"] == task:
+            t["status"] = status
+            return {"message": f"Task '{task}' updated for elderly {id}!"}
+    raise HTTPException(status_code=404, detail="Task not found")
 
 # Medications Management
 @app.post("/medications")
