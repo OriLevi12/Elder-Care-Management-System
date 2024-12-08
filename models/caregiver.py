@@ -15,3 +15,9 @@ class Caregiver:
 
     def add_task(self, task: str):
         self.tasks.append({"task": task, "status": "pending"})
+
+    def update_all(self, salary_price: float, salary_amount: int,saturday_price: float, saturday_amount: int,allowance_price: float, allowance_amount: int):
+        self.salary = {"price": salary_price, "amount": salary_amount, "total": salary_price * salary_amount}
+        self.saturday = {"price": saturday_price, "amount": saturday_amount, "total": saturday_price * saturday_amount}
+        self.allowance = {"price": allowance_price, "amount": allowance_amount, "total": allowance_price * allowance_amount}
+        self.total_bank = self.salary["total"] + self.saturday["total"] + self.allowance["total"]
