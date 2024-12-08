@@ -19,30 +19,19 @@ def add_caregiver(name: str, id: int, bank_name: str, bank_account: str, branch_
 def get_caregivers():
     return {"caregivers": list(caregivers.values())}
 
-@router.post("/{id}/tasks")
-def add_task_to_caregiver(id: int, task: str):
-    if id not in caregivers:
-        raise HTTPException(status_code=404, detail="Caregiver not found")
-    caregivers[id].add_task(task)
-    return {"message": f"Task '{task}' added for caregiver {id}"}
 
-@router.put("/{id}/update-all")
-def update_all(
-    id: int,
-    salary_price: float,
-    salary_amount: int,
-    saturday_price: float,
-    saturday_amount: int,
-    allowance_price: float,
-    allowance_amount: int
-):
+@router.put("/{id}/update-salary")
+def put_salary(
+    id: int,salary_price: float,salary_amount: int,saturday_price: float,saturday_amount: int,allowance_price: float,
+    allowance_amount: int):
+
     if id not in caregivers:
         raise HTTPException(status_code=404, detail="Caregiver not found")
 
-    caregivers[id].update_all(salary_price, salary_amount, saturday_price, saturday_amount, allowance_price, allowance_amount)
+    caregivers[id].update_salary(salary_price, salary_amount, saturday_price, saturday_amount, allowance_price, allowance_amount)
 
     return {
-        "message": f"All details updated for caregiver {id}",
+        "message": f"salary updated for caregiver {id}",
         "total_bank": caregivers[id].total_bank
     }
 
