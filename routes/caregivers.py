@@ -6,10 +6,10 @@ router = APIRouter()
 caregivers = {}
 
 @router.post("/")
-def add_caregiver(name: str, id: int, bank_name: str, bank_account: str):
+def add_caregiver(name: str, id: int, bank_name: str, bank_account: str, branch_number: str):
     if id in caregivers:
         raise HTTPException(status_code=400, detail="Caregiver already exists")
-    caregivers[id] = Caregiver(name, id, bank_name, bank_account)
+    caregivers[id] = Caregiver(name, id, bank_name, bank_account, branch_number)
     return {"message": f"Caregiver {name} added successfully"}
 
 @router.get("/")
