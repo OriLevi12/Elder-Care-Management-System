@@ -1,5 +1,4 @@
 from fpdf import FPDF
-from models.caregiver import Caregiver
 from datetime import datetime
 
 class PDFGenerator:
@@ -14,7 +13,7 @@ class PDFGenerator:
         self.pdf.cell(0, 10, txt=self.title, ln=True, align='C')
         self.pdf.ln(10)
 
-    def add_table(self, caregiver: Caregiver):
+    def add_table(self, caregiver):
         self.pdf.set_font("Helvetica", style="B", size=12)
 
         # Table header
@@ -46,7 +45,7 @@ class PDFGenerator:
         self.pdf.cell(col_widths[3], 10, f"{caregiver.total_bank:.2f}", border=1, align='C')
         self.pdf.ln(20)
 
-    def add_footer(self, caregiver: Caregiver):
+    def add_footer(self, caregiver):
         # Add current date
         current_date = datetime.now().strftime("%Y-%m-%d")
         self.pdf.set_font("Helvetica", size=12)
@@ -68,7 +67,8 @@ class PDFGenerator:
             print(f"Error creating PDF: {e}")
         return filename
 
-def generate_caregiver_pdf(caregiver: Caregiver) -> str:
+def generate_caregiver_pdf(caregiver):
+    from models.caregiver import Caregiver  # Lazy Import to avoid circular import
     pdf_gen = PDFGenerator(title=f"Caregiver Report for {caregiver.name}")
     pdf_gen.add_title(caregiver.name, caregiver.id)
     pdf_gen.add_table(caregiver)
