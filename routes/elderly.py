@@ -3,22 +3,49 @@ from models.elderly import Elderly
 
 router = APIRouter()
 
-elderly_list = {}
-
 @router.post("/")
 def add_elderly(name: str, id: int):
-    if id in elderly_list:
-        raise HTTPException(status_code=400, detail="Elderly person already exists")
-    elderly_list[id] = Elderly(name, id)
-    return {"message": f"Elderly person {name} added successfully"}
+    try:
+        Elderly.add(name, id)
+        return {"message": f"Elderly person {name} added successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/")
 def get_elderly():
-    return {"elderly": list(elderly_list.values())}
+    return {"elderly": Elderly.get_all()}
+
+@router.delete("/{id}")
+def delete_elderly(id: int):
+    try:
+        deleted = Elderly.delete(id)
+        return {"message": f"Elderly person {deleted.name} deleted successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.post("/{id}/tasks")
 def add_task_to_elderly(id: int, task: str):
-    if id not in elderly_list:
-        raise HTTPException(status_code=404, detail="Elderly person not found")
-    elderly_list[id].add_task(task)
-    return {"message": f"Task '{task}' added for elderly {id}"}
+    try:
+        elderly = Elderly.get(id)
+        elderly.add_task(task)
+        return {"message": f"Task '{task}' added for elderly {id}"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.delete("/{id}/tasks")
+def delete_task_from_elderly(id: int, task: str):
+    try:
+        elderly = Elderly.get(id)
+        elderly.delete_task(task)
+        return {"message": f"Task '{task}' deleted for elderly {id}"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+@router.put("/{id}/tasks/status")
+def update_task_status(id: int, task: str, status: str):
+    try:
+        elderly = Elderly.get(id)
+        elderly.update_task_status(task, status)
+        return {"message": f"Task '{task}' status updated to '{status}' for elderly {id}"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
