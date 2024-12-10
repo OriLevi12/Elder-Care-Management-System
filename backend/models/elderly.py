@@ -1,3 +1,4 @@
+from models.task import Task
 from pydantic import BaseModel
 from typing import List, Dict
 
@@ -32,12 +33,23 @@ class Elderly(BaseModel):
             raise ValueError("Elderly person not found")
         return elderly_list.pop(id)
 
-    def add_task(self, task: str):
-        if task in self.tasks:
-            raise ValueError(f"Task '{task}' already exists")
-        self.tasks.append(task)
 
-    def delete_task(self, task: str):
-        if task not in self.tasks:
-            raise ValueError(f"Task '{task}' not found")
-        self.tasks.remove(task)
+    def add_task(self, description: str):
+        if any(t.description == description for t in self.tasks):
+            raise ValueError(f"Task '{description}' already exists")
+        self.tasks.append(Task(description=description))
+
+
+    def delete_task(self, description: str):
+        for task in self.tasks:
+            if task.description == description:
+                self.tasks.remove(task)
+                return
+        raise ValueError(f"Task '{description}' not found")
+
+    def update_task_status(self, description: str, new_status: str):
+        for task in self.tasks:
+            if task.description == description:
+                task.update_status(new_status)
+                return task
+        raise ValueError(f"Task '{description}' not found")
