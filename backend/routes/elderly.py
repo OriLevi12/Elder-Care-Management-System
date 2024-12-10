@@ -40,12 +40,3 @@ def delete_task_from_elderly(id: int, task: str):
         return {"message": f"Task '{task}' deleted for elderly {id}"}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
-
-@router.put("/{id}/tasks/status")
-def update_task_status(id: int, task: str, status: str):
-    try:
-        elderly = Elderly.get(id)
-        elderly.update_task_status(task, status)
-        return {"message": f"Task '{task}' status updated to '{status}' for elderly {id}"}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
