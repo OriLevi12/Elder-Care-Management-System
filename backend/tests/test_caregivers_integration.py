@@ -29,10 +29,8 @@ async def test_delete_nonexistent_caregiver():
 @pytest.mark.asyncio
 async def test_add_caregiver_invalid_data():
     async with AsyncClient(base_url="http://localhost:8000") as client:
-        # ניסיון להוסיף Caregiver ללא כל הפרמטרים הנדרשים
         response = await client.post("/caregivers/", params={
             "name": "Invalid Caregiver",
-            # חסר id, bank_name, bank_account, branch_number
         })
         assert response.status_code == 422
         assert all(item["msg"] == "Field required" for item in response.json()["detail"])
