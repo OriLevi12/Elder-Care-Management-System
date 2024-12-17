@@ -5,16 +5,16 @@ services:
     image: postgres:latest
     container_name: eldercare_postgres
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: elder_care_db
+      POSTGRES_USER: ${POSTGRS_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   backend:
-    image: elder-care-app  # שימוש בתמונה קיימת בשם elder-care-app
+    image: elder-care-app  
     container_name: eldercare_backend
     environment:
       DATABASE_URL: postgresql://myuser:mypassword@db:5432/elder_care_db
@@ -22,6 +22,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
+
 
 volumes:
   pgdata:

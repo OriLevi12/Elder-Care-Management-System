@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from db.database import Base, engine
 from routes import caregivers, elderly, medications
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 Base.metadata.create_all(bind=engine)
 
