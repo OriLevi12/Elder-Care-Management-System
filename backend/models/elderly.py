@@ -1,27 +1,10 @@
-from pydantic import BaseModel
-from typing import List
-from models.task import Task
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
+from db.database import Base
 
-class Elderly(BaseModel):
-    id: int
-    name: str
-    tasks: List[Task] = []
+class Elderly(Base):
+    __tablename__ = "elderly"
 
-    def add_task(self, task: Task):
-        if any(t.description == task.description for t in self.tasks):
-            raise ValueError(f"Task '{task.description}' already exists")
-        self.tasks.append(task)
-
-    def delete_task(self, description: str):
-        for task in self.tasks:
-            if task.description == description:
-                self.tasks.remove(task)
-                return
-        raise ValueError(f"Task '{description}' not found")
-
-    def update_task_status(self, description: str, new_status: str):
-        for task in self.tasks:
-            if task.description == description:
-                task.update_status(new_status)
-                return task
-        raise ValueError(f"Task '{description}' not found")
+    id = Column(Integer, primary_key=True, index=True)  
+    name = Column(String, nullable=False)
+    tasks = relationship("Task", back_populates="elderly", cascade="all, delete")

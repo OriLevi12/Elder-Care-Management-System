@@ -1,58 +1,73 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
 from models.elderly import Elderly
 from models.task import Task
-from typing import Dict
+from schemas.elderly import ElderlySchema, ElderlyCreate
+from schemas.task import TaskSchema, TaskCreate
+from db.database import get_db
 
 router = APIRouter()
 
-elderly_list: Dict[int, Elderly] = {}
+# Create a new elderly person
+@router.post("/", response_model=ElderlySchema)
+def add_elderly(elderly: ElderlyCreate, db: Session = Depends(get_db)):
+    existing_elderly = db.query(Elderly).filter(Elderly.id == elderly.id).first()
+    if existing_elderly:
+        raise HTTPException(status_code=400, detail="Elderly with this ID already exists")
 
-@router.post("/")
-def add_elderly(name: str, id: int):
-    if id in elderly_list:
-        raise HTTPException(status_code=400, detail="Elderly person already exists")
-    elderly = Elderly(id=id, name=name)
-    elderly_list[id] = elderly
-    return {"message": f"Elderly person {name} added successfully"}
+    new_elderly = Elderly(id=elderly.id, name=elderly.name)
+    db.add(new_elderly)
+    db.commit()
+    db.refresh(new_elderly)
+    return new_elderly
 
-@router.get("/")
-def get_elderly():
-    return {"elderly": list(elderly_list.values())}
+# Get all elderly persons
+@router.get("/", response_model=list[ElderlySchema])
+def get_all_elderly(db: Session = Depends(get_db)):
+    return db.query(Elderly).all()
 
-@router.delete("/{id}")
-def delete_elderly(id: int):
-    if id not in elderly_list:
-        raise HTTPException(status_code=404, detail="Elderly person not found")
-    deleted = elderly_list.pop(id)
-    return {"message": f"Elderly person {deleted.name} deleted successfully"}
+# Delete an elderly person by ID
+@router.delete("/{elderly_id}")
+def delete_elderly(elderly_id: int, db: Session = Depends(get_db)):
+    elderly = db.query(Elderly).filter(Elderly.id == elderly_id).first()
+    if not elderly:
+        raise HTTPException(status_code=404, detail="Elderly not found")
+    db.delete(elderly)
+    db.commit()
+    return {"message": f"Elderly {elderly_id} deleted successfully"}
 
-@router.post("/{id}/tasks")
-def add_task_to_elderly(id: int, description: str):
-    if id not in elderly_list:
-        raise HTTPException(status_code=404, detail="Elderly person not found")
-    try:
-        task = Task(description=description)
-        elderly_list[id].add_task(task)
-        return {"message": f"Task '{description}' added for elderly {id}"}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+# Add a new task for an elderly person
+@router.post("/{elderly_id}/tasks", response_model=TaskSchema)
+def add_task_to_elderly(elderly_id: int, task: TaskCreate, db: Session = Depends(get_db)):
+    elderly = db.query(Elderly).filter(Elderly.id == elderly_id).first()
+    if not elderly:
+        raise HTTPException(status_code=404, detail="Elderly not found")
 
-@router.delete("/{id}/tasks")
-def delete_task_from_elderly(id: int, description: str):
-    if id not in elderly_list:
-        raise HTTPException(status_code=404, detail="Elderly person not found")
-    try:
-        elderly_list[id].delete_task(description)
-        return {"message": f"Task '{description}' deleted for elderly {id}"}
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    new_task = Task(description=task.description, status=task.status, elderly=elderly)
+    db.add(new_task)
+    db.commit()
+    db.refresh(new_task)
+    return new_task
 
-@router.put("/{id}/tasks/status")
-def update_task_status(id: int, description: str, status: str):
-    if id not in elderly_list:
-        raise HTTPException(status_code=404, detail="Elderly person not found")
-    try:
-        updated_task = elderly_list[id].update_task_status(description, status)
-        return {"message": f"Task '{description}' status updated to '{status}'", "task": updated_task.dict()}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+# Delete a task by ID for a specific elderly person
+@router.delete("/{elderly_id}/tasks/{task_id}")
+def delete_task_from_elderly(elderly_id: int, task_id: int, db: Session = Depends(get_db)):
+    task = db.query(Task).filter(Task.id == task_id, Task.elderly_id == elderly_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    db.delete(task)
+    db.commit()
+    return {"message": f"Task {task_id} deleted successfully"}
+
+# Update the status of a task for a specific elderly person
+@router.put("/{elderly_id}/tasks/{task_id}/status", response_model=TaskSchema)
+def update_task_status(elderly_id: int, task_id: int, new_status: str, db: Session = Depends(get_db)):
+    task = db.query(Task).filter(Task.id == task_id, Task.elderly_id == elderly_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    task.status = new_status
+    db.commit()
+    db.refresh(task)
+    return task

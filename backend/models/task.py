@@ -1,11 +1,12 @@
-from pydantic import BaseModel, Field
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+from db.database import Base
 
-class Task(BaseModel):
-    description: str
-    status: str = Field(default="pending", pattern="^(pending|in progress|completed)$")
+class Task(Base):
+    __tablename__ = "tasks"
 
-    def update_status(self, new_status: str):
-        valid_statuses = {"pending", "in progress", "completed"}
-        if new_status not in valid_statuses:
-            raise ValueError(f"Invalid status '{new_status}'. Valid statuses are: {valid_statuses}")
-        self.status = new_status
+    id = Column(Integer, primary_key=True, index=True)
+    description = Column(String, nullable=False)
+    status = Column(String, default="pending")
+    elderly_id = Column(Integer, ForeignKey("elderly.id"))
+    elderly = relationship("Elderly", back_populates="tasks")
