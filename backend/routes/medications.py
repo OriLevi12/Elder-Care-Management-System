@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from models.medication import Medication, MedicationCreate, MedicationResponse
+from models.medication import Medication
 from db.database import get_db
+from schemas.medication import MedicationCreate, MedicationResponse
 
 router = APIRouter()
 
