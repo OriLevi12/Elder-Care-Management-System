@@ -1,13 +1,13 @@
 import streamlit as st
-from api_client import fetch_data, add_data, delete_data, update_salary, generate_pdf
+from api_client import fetch_data, add_data, delete_data, update_salary, generate_pdf, update_task_status
 
 # Title with styling
 st.markdown("<h1 style='text-align: center; color: navy;'>Elder Care Management System</h1>", unsafe_allow_html=True)
 st.markdown("<hr>", unsafe_allow_html=True)
 
 # Sidebar with image and menu
-st.sidebar.image("elder_care_logo.png", use_container_width=True)
-menu = ["View Data", "Add Data", "Delete Data", "Update Caregiver Salary", "Generate Caregiver PDF"]
+st.sidebar.image("elder_care_logo.png", use_container_width = True)
+menu = ["View Data", "Manage Elderly", "Manage Caregivers", "Manage Medications", "Add Data"]
 choice = st.sidebar.radio("Menu", menu)
 
 if choice == "View Data":
@@ -24,14 +24,125 @@ if choice == "View Data":
                     if "tasks" in entry:
                         # Include task ID in the description
                         entry["tasks"] = ", ".join([f"{task['id']}: {task['description']} ({task['status']})" for task in entry["tasks"]])
-            
+
+            # Handle salary for Caregivers
+            if data_type == "Caregivers":
+                for entry in data:
+                    salary_data = entry.get('salary', {})
+                    entry["salary"] = f"Base: {salary_data.get('price', 'N/A')}, Amount: {salary_data.get('amount', 'N/A')}, Total: {                                        salary_data.get('total', 'N/A')}"
+
             st.dataframe(data)
         except RuntimeError as e:
             st.error(str(e))
 
+elif choice == "Manage Elderly":
+    st.subheader("👴 Manage Elderly")
+
+    # Fetch Elderly Data
+    try:
+        elderly_data = fetch_data("elderly")
+        for elderly in elderly_data:
+            st.markdown(f"### {elderly['name']} (ID: {elderly['id']})")
+
+            # Display Tasks
+            if "tasks" in elderly:
+                st.markdown("**Tasks:**")
+                for task in elderly["tasks"]:
+                    st.write(f"- {task['id']}: {task['description']} ({task['status']})")
+
+                    # Update Task Status
+                    new_status = st.text_input(f"Update Status for Task {task['id']}", value=task['status'], key=f"update_status_{task['id']}")
+                    if st.button(f"Update Task {task['id']} Status", key=f"update_task_status_{task['id']}"):
+                        update_task_status(elderly['id'], task['id'], new_status)
+                        st.success(f"Task {task['id']} status updated to {new_status}!")
+
+                    # Delete Task
+                    if st.button(f"Delete Task {task['id']}", key=f"delete_task_{task['id']}"):
+                        delete_data(f"elderly/{elderly['id']}/tasks/{task['id']}")
+                        st.success(f"Task {task['id']} deleted successfully!")
+
+            # Add Task
+            st.markdown("**Add Task:**")
+            description = st.text_input(f"Task Description for {elderly['name']}", key=f"task_description_{elderly['id']}")
+            status = st.text_input("Task Status", value="pending", key=f"task_status_{elderly['id']}")
+            if st.button(f"Add Task to {elderly['name']}", key=f"add_task_{elderly['id']}"):
+                payload = {"description": description, "status": status}
+                add_data(f"elderly/{elderly['id']}/tasks", payload)
+                st.success(f"Task added successfully to {elderly['name']}!")
+
+            # Delete Elderly
+            if st.button(f"Delete {elderly['name']}", key=f"delete_elderly_{elderly['id']}"):
+                delete_data(f"elderly/{elderly['id']}")
+                st.success(f"Elderly {elderly['name']} deleted successfully!")
+
+    except RuntimeError as e:
+        st.error(str(e))
+
+elif choice == "Manage Caregivers":
+    st.subheader("🧑‍⚕️ Manage Caregivers")
+
+    # Fetch Caregiver Data
+    try:
+        caregiver_data = fetch_data("caregivers")
+        for caregiver in caregiver_data:
+            st.markdown(f"### {caregiver['name']} (ID: {caregiver['id']})")
+
+            # Update Salary
+            st.markdown("**Update Salary:**")
+            salary_price = st.number_input("Salary Price", min_value=0.0, step=0.01, key=f"salary_price_{caregiver['id']}")
+            salary_amount = st.number_input("Salary Amount", min_value=0, step=1, key=f"salary_amount_{caregiver['id']}")
+            saturday_price = st.number_input("Saturday Price", min_value=0.0, step=0.01, key=f"saturday_price_{caregiver['id']}")
+            saturday_amount = st.number_input("Saturday Amount", min_value=0, step=1, key=f"saturday_amount_{caregiver['id']}")
+            allowance_price = st.number_input("Allowance Price", min_value=0.0, step=0.01, key=f"allowance_price_{caregiver['id']}")
+            allowance_amount = st.number_input("Allowance Amount", min_value=0, step=1, key=f"allowance_amount_{caregiver['id']}")
+
+            if st.button(f"Update Salary for {caregiver['name']}", key=f"update_salary_{caregiver['id']}"):
+                payload = {
+                    "salary_price": salary_price,
+                    "salary_amount": salary_amount,
+                    "saturday_price": saturday_price,
+                    "saturday_amount": saturday_amount,
+                    "allowance_price": allowance_price,
+                    "allowance_amount": allowance_amount
+                }
+                update_salary(caregiver['id'], payload)
+                st.success(f"Salary updated for {caregiver['name']}!")
+
+            # Generate PDF
+            if st.button(f"Generate PDF for {caregiver['name']}", key=f"generate_pdf_{caregiver['id']}"):
+                pdf_data = generate_pdf(caregiver['id'])
+                st.download_button(label="Download PDF", data=pdf_data, file_name=f"caregiver_{caregiver['id']}_report.pdf", mime="application/pdf")
+
+            # Delete Caregiver
+            if st.button(f"Delete {caregiver['name']}", key=f"delete_caregiver_{caregiver['id']}"):
+                delete_data(f"caregivers/{caregiver['id']}")
+                st.success(f"Caregiver {caregiver['name']} deleted successfully!")
+
+    except RuntimeError as e:
+        st.error(str(e))
+
+elif choice == "Manage Medications":
+    st.subheader("💊 Manage Medications")
+
+    # Fetch Medication Data
+    try:
+        medication_data = fetch_data("medications")
+        for medication in medication_data:
+            st.markdown(f"### {medication['name']} (ID: {medication['id']})")
+            st.write(f"Dosage: {medication['dosage']}")
+            st.write(f"Frequency: {medication['frequency']}")
+
+            # Delete Medication
+            if st.button(f"Delete {medication['name']}", key=f"delete_medication_{medication['id']}"):
+                delete_data(f"medications/{medication['id']}")
+                st.success(f"Medication {medication['name']} deleted successfully!")
+
+    except RuntimeError as e:
+        st.error(str(e))
+
 elif choice == "Add Data":
     st.subheader("➕ Add Data")
-    data_type = st.selectbox("Select data type to add", ["Elderly", "Caregiver", "Task", "Medication"])
+    data_type = st.selectbox("Select data type to add", ["Elderly", "Caregiver", "Medication"])
 
     if data_type == "Elderly":
         id = st.number_input("ID", min_value=1, step=1)
@@ -64,18 +175,6 @@ elif choice == "Add Data":
             except RuntimeError as e:
                 st.error(str(e))
 
-    elif data_type == "Task":
-        elderly_id = st.number_input("Elderly ID", min_value=1, step=1)
-        description = st.text_input("Task Description")
-        status = st.text_input("Task Status", value="pending", help="Enter task status (e.g., 'pending', 'completed').")
-        if st.button("Add Task"):
-            payload = {"description": description, "status": status}
-            try:
-                add_data(f"elderly/{elderly_id}/tasks", payload)
-                st.success("Task added successfully!")
-            except RuntimeError as e:
-                st.error(str(e))
-
     elif data_type == "Medication":
         name = st.text_input("Medication Name")
         dosage = st.text_input("Dosage")
@@ -87,86 +186,4 @@ elif choice == "Add Data":
                 st.success("Medication added successfully!")
             except RuntimeError as e:
                 st.error(str(e))
-
-elif choice == "Delete Data":
-    st.subheader("🗑️ Delete Data")
-    data_type = st.selectbox("Select data type to delete", ["Elderly", "Caregiver", "Task", "Medication"])
-
-    if data_type == "Elderly":
-        id = st.number_input(f"{data_type} ID", min_value=1, step=1)
-        if st.button("Delete Elderly"):
-            endpoint = f"elderly/{id}"
-            try:
-                delete_data(endpoint)
-                st.success(f"Elderly {id} deleted successfully!")
-            except RuntimeError as e:
-                st.error(str(e))
-
-    elif data_type == "Caregiver":
-        caregiver_id = st.number_input(f"{data_type} ID", min_value=1, step=1)
-        if st.button("Delete Caregiver"):
-            endpoint = f"caregivers/{caregiver_id}"
-            try:
-                delete_data(endpoint)
-                st.success(f"Caregiver {caregiver_id} deleted successfully!")
-            except RuntimeError as e:
-                st.error(str(e))
-
-    elif data_type == "Task":
-        elderly_id = st.number_input("Elderly ID", min_value=1, step=1)
-        task_id = st.number_input(f"Task ID", min_value=1, step=1)
-        if st.button("Delete Task"):
-            endpoint = f"elderly/{elderly_id}/tasks/{task_id}"
-            try:
-                delete_data(endpoint)
-                st.success(f"Task {task_id} for Elderly {elderly_id} deleted successfully!")
-            except RuntimeError as e:
-                st.error(str(e))
-
-    elif data_type == "Medication":
-        medication_id = st.number_input(f"{data_type} ID", min_value=1, step=1)
-        if st.button("Delete Medication"):
-            endpoint = f"medications/{medication_id}"
-            try:
-                delete_data(endpoint)
-                st.success(f"Medication {medication_id} deleted successfully!")
-            except RuntimeError as e:
-                st.error(str(e))
-
-elif choice == "Update Caregiver Salary":
-    st.subheader("💰 Update Caregiver Salary")
-    caregiver_id = st.number_input("Caregiver ID", min_value=1, step=1)
-    salary_price = st.number_input("Salary Price", min_value=0.0, step=0.01)
-    salary_amount = st.number_input("Salary Amount", min_value=0, step=1)
-    saturday_price = st.number_input("Saturday Price", min_value=0.0, step=0.01)
-    saturday_amount = st.number_input("Saturday Amount", min_value=0, step=1)
-    allowance_price = st.number_input("Allowance Price", min_value=0.0, step=0.01)
-    allowance_amount = st.number_input("Allowance Amount", min_value=0, step=1)
-
-    if st.button("Update Salary"):
-        payload = {
-            "salary_price": salary_price,
-            "salary_amount": salary_amount,
-            "saturday_price": saturday_price,
-            "saturday_amount": saturday_amount,
-            "allowance_price": allowance_price,
-            "allowance_amount": allowance_amount
-        }
-        try:
-            update_salary(caregiver_id, payload)
-            st.success("Salary updated successfully!")
-        except RuntimeError as e:
-            st.error(str(e))
-
-elif choice == "Generate Caregiver PDF":
-    st.subheader("📄 Generate Caregiver PDF")
-    caregiver_id = st.number_input("Caregiver ID", min_value=1, step=1)
-
-    if st.button("Generate PDF"):
-        try:
-            pdf_data = generate_pdf(caregiver_id)
-            st.success(f"PDF for caregiver {caregiver_id} generated successfully!")
-            st.download_button(label="Download PDF", data=pdf_data, file_name=f"caregiver_{caregiver_id}_report.pdf", mime="application/pdf")
-        except RuntimeError as e:
-            st.error(str(e))
 
