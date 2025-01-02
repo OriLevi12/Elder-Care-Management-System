@@ -1,14 +1,14 @@
 import streamlit as st
-from view_data import view_data
-from add_data import add_data_ui
-from manage_elderly import manage_elderly
-from manage_caregivers import manage_caregivers
-from manage_medications import manage_medications
+from components.view_data import view_data
+from components.add_data import add_data_ui
+from components.manage_elderly import manage_elderly
+from components.manage_caregivers import manage_caregivers
+from components.manage_medications import manage_medications
 
 # Title and sidebar
 st.markdown("<h1 style='text-align: center; color: navy;'>Elder Care Management System</h1>", unsafe_allow_html=True)
 st.markdown("<hr>", unsafe_allow_html=True)
-st.sidebar.image("elder_care_logo.png", use_container_width=True)
+st.sidebar.image("media/elder_care_logo.png", use_container_width=True)
 
 # Menu options
 menu = ["View Data", "Manage Elderly", "Manage Caregivers", "Manage Medications", "Add Data"]
