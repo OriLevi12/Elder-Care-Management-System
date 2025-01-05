@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 from db.database import Base
 
 
@@ -9,4 +10,6 @@ class Medication(Base):
     name = Column(String, nullable=False)
     dosage = Column(String, nullable=False)
     frequency = Column(String, nullable=False)
+    elderly_id = Column(Integer, ForeignKey("elderly.id", ondelete="CASCADE"), nullable=False)
+    elderly = relationship("Elderly", back_populates="medications")
 

@@ -129,10 +129,18 @@ async def test_add_task_to_nonexistent_elderly(setup_database):
         assert response.json()["detail"] == "Elderly not found"
 
 ### Medication Tests ###
+
 @pytest.mark.asyncio
-async def test_add_medication_success(setup_database):
+async def test_add_medication_to_elderly_success(setup_database):
+    # Add an elderly person first
     async with AsyncClient(base_url="http://localhost:8000") as client:
-        response = await client.post("/medications/", json={
+        await client.post("/elderly/", json={
+            "id": 1,
+            "name": "Alice"
+        })
+        
+        # Add a medication for the elderly person
+        response = await client.post("/elderly/1/medications", json={
             "name": "Aspirin",
             "dosage": "500mg",
             "frequency": "Once a day"
@@ -141,31 +149,69 @@ async def test_add_medication_success(setup_database):
         assert response.json()["name"] == "Aspirin"
 
 @pytest.mark.asyncio
-async def test_add_invalid_medication(setup_database):
+async def test_add_medication_to_nonexistent_elderly(setup_database):
     async with AsyncClient(base_url="http://localhost:8000") as client:
-        response = await client.post("/medications/", json={
-            "name": "",
-            "dosage": "500mg",
-            "frequency": "Once a day"
-        })
-        assert response.status_code == 422
-
-@pytest.mark.asyncio
-async def test_delete_medication_success(setup_database):
-    async with AsyncClient(base_url="http://localhost:8000") as client:
-        await client.post("/medications/", json={
+        # Attempt to add medication for a non-existent elderly person
+        response = await client.post("/elderly/99/medications", json={
             "name": "Aspirin",
             "dosage": "500mg",
             "frequency": "Once a day"
         })
-        response = await client.delete("/medications/1")
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Elderly not found"
+
+@pytest.mark.asyncio
+async def test_get_medications_for_elderly_success(setup_database):
+    # Add an elderly person and medications
+    async with AsyncClient(base_url="http://localhost:8000") as client:
+        await client.post("/elderly/", json={
+            "id": 1,
+            "name": "Alice"
+        })
+        await client.post("/elderly/1/medications", json={
+            "name": "Aspirin",
+            "dosage": "500mg",
+            "frequency": "Once a day"
+        })
+        await client.post("/elderly/1/medications", json={
+            "name": "Ibuprofen",
+            "dosage": "200mg",
+            "frequency": "Twice a day"
+        })
+        
+        # Retrieve medications for the elderly person
+        response = await client.get("/elderly/1/medications")
+        assert response.status_code == 200
+        medications = response.json()
+        assert len(medications) == 2
+        assert medications[0]["name"] == "Aspirin"
+        assert medications[1]["name"] == "Ibuprofen"
+
+@pytest.mark.asyncio
+async def test_delete_medication_from_elderly_success(setup_database):
+    # Add an elderly person and a medication
+    async with AsyncClient(base_url="http://localhost:8000") as client:
+        await client.post("/elderly/", json={
+            "id": 1,
+            "name": "Alice"
+        })
+        await client.post("/elderly/1/medications", json={
+            "name": "Aspirin",
+            "dosage": "500mg",
+            "frequency": "Once a day"
+        })
+        
+        # Delete the medication
+        response = await client.delete("/elderly/1/medications/1")
         assert response.status_code == 200
         assert response.json()["message"] == "Medication 'Aspirin' deleted successfully"
 
 @pytest.mark.asyncio
-async def test_delete_nonexistent_medication(setup_database):
+async def test_delete_nonexistent_medication_from_elderly(setup_database):
     async with AsyncClient(base_url="http://localhost:8000") as client:
-        response = await client.delete("/medications/99")
+        # Attempt to delete a non-existent medication
+        response = await client.delete("/elderly/1/medications/99")
         assert response.status_code == 404
         assert response.json()["detail"] == "Medication not found"
-       
+
+     

@@ -8,6 +8,7 @@ def manage_elderly():
         for elderly in elderly_data:
             st.markdown(f"### {elderly['name']} (ID: {elderly['id']})")
 
+            # Display Tasks
             if "tasks" in elderly:
                 st.markdown("**Tasks:**")
                 for task in elderly["tasks"]:
@@ -22,6 +23,17 @@ def manage_elderly():
                         delete_data(f"elderly/{elderly['id']}/tasks/{task['id']}")
                         st.success(f"Task {task['id']} deleted successfully!")
 
+            # Display Medications
+            if "medications" in elderly:
+                st.markdown("**Medications:**")
+                for med in elderly["medications"]:
+                    st.write(f"- {med['name']} ({med['dosage']}, {med['frequency']})")
+
+                    if st.button(f"Delete Medication {med['name']}", key=f"delete_medication_{med['id']}"):
+                        delete_data(f"elderly/{elderly['id']}/medications/{med['id']}")
+                        st.success(f"Medication {med['name']} deleted successfully!")
+
+            # Add a Task
             description = st.text_input(f"Task Description for {elderly['name']}", key=f"task_description_{elderly['id']}")
             status = st.text_input("Task Status", value="pending", key=f"task_status_{elderly['id']}")
             if st.button(f"Add Task to {elderly['name']}", key=f"add_task_{elderly['id']}"):
@@ -29,9 +41,18 @@ def manage_elderly():
                 add_data(f"elderly/{elderly['id']}/tasks", payload)
                 st.success(f"Task added successfully to {elderly['name']}!")
 
+            # Add a Medication
+            name = st.text_input(f"Medication Name for {elderly['name']}", key=f"medication_name_{elderly['id']}")
+            dosage = st.text_input(f"Dosage for {elderly['name']}", key=f"medication_dosage_{elderly['id']}")
+            frequency = st.text_input(f"Frequency for {elderly['name']}", key=f"medication_frequency_{elderly['id']}")
+            if st.button(f"Add Medication to {elderly['name']}", key=f"add_medication_{elderly['id']}"):
+                payload = {"name": name, "dosage": dosage, "frequency": frequency}
+                add_data(f"elderly/{elderly['id']}/medications", payload)
+                st.success(f"Medication {name} added successfully to {elderly['name']}!")
+
+            # Delete Elderly
             if st.button(f"Delete {elderly['name']}", key=f"delete_elderly_{elderly['id']}"):
                 delete_data(f"elderly/{elderly['id']}")
                 st.success(f"Elderly {elderly['name']} deleted successfully!")
     except RuntimeError as e:
         st.error(str(e))
-

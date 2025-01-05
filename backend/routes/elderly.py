@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from models.elderly import Elderly
 from models.task import Task
+from models.medication import Medication
+from schemas.medication import MedicationCreate, MedicationResponse
 from schemas.elderly import ElderlySchema, ElderlyCreate
 from schemas.task import TaskSchema, TaskCreate
 from db.database import get_db
@@ -71,3 +73,40 @@ def update_task_status(elderly_id: int, task_id: int, new_status: str, db: Sessi
     db.commit()
     db.refresh(task)
     return task
+
+# Add a medication for an elderly person
+@router.post("/{elderly_id}/medications", response_model=MedicationResponse)
+def add_medication_to_elderly(elderly_id: int, medication: MedicationCreate, db: Session = Depends(get_db)):
+    elderly = db.query(Elderly).filter(Elderly.id == elderly_id).first()
+    if not elderly:
+        raise HTTPException(status_code=404, detail="Elderly not found")
+
+    new_medication = Medication(
+        name=medication.name,
+        dosage=medication.dosage,
+        frequency=medication.frequency,
+        elderly=elderly
+    )
+    db.add(new_medication)
+    db.commit()
+    db.refresh(new_medication)
+    return new_medication
+
+# Get all medications for an elderly person
+@router.get("/{elderly_id}/medications", response_model=list[MedicationResponse])
+def get_medications_for_elderly(elderly_id: int, db: Session = Depends(get_db)):
+    elderly = db.query(Elderly).filter(Elderly.id == elderly_id).first()
+    if not elderly:
+        raise HTTPException(status_code=404, detail="Elderly not found")
+    return elderly.medications
+
+# Delete a medication for an elderly person
+@router.delete("/{elderly_id}/medications/{medication_id}")
+def delete_medication_from_elderly(elderly_id: int, medication_id: int, db: Session = Depends(get_db)):
+    medication = db.query(Medication).filter(Medication.id == medication_id, Medication.elderly_id == elderly_id).first()
+    if not medication:
+        raise HTTPException(status_code=404, detail="Medication not found")
+
+    db.delete(medication)
+    db.commit()
+    return {"message": f"Medication '{medication.name}' deleted successfully"}
