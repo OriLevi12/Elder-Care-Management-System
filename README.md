@@ -58,6 +58,21 @@ docker-compose up --build
 ```
 ---
 
+### Step 5: Access the Application UI
+Once the application is running, you can access the UI of the Elder Care Management System in your web browser:
+
+**Frontend (Streamlit):**  
+- **URL**: [http://localhost:8501](http://localhost:8501)  
+  - Manage caregivers and their salaries, and generate a detailed PDF including all caregiver details and payment information."  
+  - Manage elderly individuals, their tasks, and medications.  
+  - View all data in a structured and user-friendly format.  
+
+**Backend API (Swagger Documentation):**  
+- **URL**: [http://localhost:8000/docs](http://localhost:8000/docs)  
+  - Provides API documentation and allows you to test the backend endpoints directly.  
+
+ ---
+
 ## 📬 Contact Info
 **Ori Levi**  
 📧 Email: Leviori1218@gmail.com  
