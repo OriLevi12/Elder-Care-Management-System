@@ -3,7 +3,7 @@ from api_client import add_data, fetch_data
 
 def add_data_ui():
     st.subheader("➕ Add Data")
-    data_type = st.selectbox("Select data type to add", ["Elderly", "Caregiver", "Medication"])
+    data_type = st.selectbox("Select data type to add", ["Elderly", "Caregiver"])
 
     if data_type == "Elderly":
         id = st.number_input("ID", min_value=1, step=1)
@@ -36,15 +36,4 @@ def add_data_ui():
             except RuntimeError as e:
                 st.error(str(e))
 
-    elif data_type == "Medication":
-        elderly_id = st.number_input("Elderly ID", min_value=1, step=1)
-        name = st.text_input("Medication Name")
-        dosage = st.text_input("Dosage")
-        frequency = st.text_input("Frequency")
-        if st.button("Add Medication"):
-            payload = {"name": name, "dosage": dosage, "frequency": frequency}
-            try:
-                add_data(f"elderly/{elderly_id}/medications", payload)
-                st.success(f"Medication {name} added successfully for Elderly ID {elderly_id}!")
-            except RuntimeError as e:
-                st.error(str(e))
+ 

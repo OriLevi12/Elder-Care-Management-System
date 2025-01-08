@@ -32,8 +32,30 @@ def view_data():
                         st.markdown(f"**Bank Name:** {caregiver['bank_name']}")
                         st.markdown(f"**Bank Account:** {caregiver['bank_account']}")
                         st.markdown(f"**Branch Number:** {caregiver['branch_number']}")
+                        
+                        # Format salary details
                         salary_data = caregiver.get('salary', {})
-                        st.markdown(f"**Salary:** Base: {salary_data.get('price', 'N/A')}, Amount: {salary_data.get('amount', 'N/A')}, Total: {salary_data.get('total', 'N/A')}")
+                        base_salary = salary_data.get('price', 'N/A')
+                        amount = salary_data.get('amount', 'N/A')
+                        total = salary_data.get('total', 'N/A')
+                        st.markdown(f"**Salary:** Base: {base_salary}, Amount: {amount}, Total: {total}")
+
+                        # Optional: Add Saturday and allowance data
+                        saturday_data = caregiver.get('saturday', {})
+                        sat_base = saturday_data.get('price', 'N/A')
+                        sat_amount = saturday_data.get('amount', 'N/A')
+                        sat_total = saturday_data.get('total', 'N/A')
+                        st.markdown(f"**Saturday Pay:** Base: {sat_base}, Amount: {sat_amount}, Total: {sat_total}")
+
+                        allowance_data = caregiver.get('allowance', {})
+                        allow_base = allowance_data.get('price', 'N/A')
+                        allow_amount = allowance_data.get('amount', 'N/A')
+                        allow_total = allowance_data.get('total', 'N/A')
+                        st.markdown(f"**Allowance:** Base: {allow_base}, Amount: {allow_amount}, Total: {allow_total}")
+
+                        # Total bank balance
+                        total_bank = caregiver.get('total_bank', 'N/A')
+                        st.markdown(f"**Total Bank Balance:** {total_bank}")
 
         except RuntimeError as e:
             st.error(str(e))
