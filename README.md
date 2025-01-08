@@ -56,16 +56,6 @@ DATABASE_URL=postgresql://your_user:your_password@localhost:5432/elder_care_db
 ```bash
 docker-compose up --build
 ```
-
----
-
-## 🛠️ Usage
-### Access the API
-Once the application is running, navigate to:
-🔗 [http://localhost:8000/docs](http://localhost:8000/docs)
-
-You can explore the API documentation and test endpoints directly from the interactive Swagger UI.
-
 ---
 
 ## 📬 Contact Info
