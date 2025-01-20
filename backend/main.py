@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from db.database import Base, engine
-from routes import caregivers, elderly
+from routes import caregivers, elderly,caregiver_assignments
 from dotenv import load_dotenv
 import os
 
@@ -16,6 +16,7 @@ app = FastAPI(
 
 app.include_router(caregivers.router, prefix="/caregivers", tags=["caregivers"])
 app.include_router(elderly.router, prefix="/elderly", tags=["elderly"])
+app.include_router(caregiver_assignments.router, prefix="/caregiver-assignments", tags=["caregiver-assignments"])
 
 @app.get("/")
 def read_root():

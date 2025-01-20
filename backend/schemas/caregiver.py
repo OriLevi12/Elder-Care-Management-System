@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
-from typing import Dict
+from typing import Dict,List
+from schemas.caregiver_assignment import CaregiverAssignmentResponse
 
 class CaregiverCreate(BaseModel):
     name: str
@@ -26,6 +27,7 @@ class CaregiverResponse(BaseModel):
     saturday: Dict[str, float]
     allowance: Dict[str, float]
     total_bank: float
+    assignments: List[CaregiverAssignmentResponse] = []
 
     class Config:
         orm_mode = True

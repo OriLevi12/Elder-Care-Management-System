@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.dialects.postgresql import JSONB
 from db.database import Base
+from sqlalchemy.orm import relationship
 
 class Caregiver(Base):
     __tablename__ = "caregivers"
@@ -14,3 +15,4 @@ class Caregiver(Base):
     saturday = Column(JSONB, default={"price": 0, "amount": 0, "total": 0})
     allowance = Column(JSONB, default={"price": 0, "amount": 0, "total": 0})
     total_bank = Column(Float, default=0.0)
+    assignments = relationship("CaregiverAssignment", back_populates="caregiver", cascade="all, delete")

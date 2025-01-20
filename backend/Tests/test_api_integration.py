@@ -214,4 +214,128 @@ async def test_delete_nonexistent_medication_from_elderly(setup_database):
         assert response.status_code == 404
         assert response.json()["detail"] == "Medication not found"
 
+### Caregiver Assignment Tests ###
+@pytest.mark.asyncio
+async def test_create_assignment_success(setup_database):
+    # Add caregiver and elderly
+    async with AsyncClient(base_url="http://localhost:8000") as client:
+        await client.post("/caregivers/", json={
+            "id": 101,
+            "name": "John Doe",
+            "bank_name": "Bank A",
+            "bank_account": "12345",
+            "branch_number": "001"
+        })
+        await client.post("/elderly/", json={
+            "id": 201,
+            "name": "Alice"
+        })
+
+        # Create assignment
+        response = await client.post("/caregiver-assignments/", json={
+            "caregiver_id": 101,
+            "elderly_id": 201
+        })
+        assert response.status_code == 200
+        assignment = response.json()
+        assert assignment["caregiver_id"] == 101
+        assert assignment["elderly_id"] == 201
+
+@pytest.mark.asyncio
+async def test_create_assignment_with_nonexistent_caregiver(setup_database):
+    # Add elderly
+    async with AsyncClient(base_url="http://localhost:8000") as client:
+        await client.post("/elderly/", json={
+            "id": 201,
+            "name": "Alice"
+        })
+
+        # Attempt to create assignment with non-existent caregiver
+        response = await client.post("/caregiver-assignments/", json={
+            "caregiver_id": 999,  # Non-existent caregiver
+            "elderly_id": 201
+        })
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Caregiver not found"
+
+@pytest.mark.asyncio
+async def test_create_assignment_with_nonexistent_elderly(setup_database):
+    # Add caregiver
+    async with AsyncClient(base_url="http://localhost:8000") as client:
+        await client.post("/caregivers/", json={
+            "id": 101,
+            "name": "John Doe",
+            "bank_name": "Bank A",
+            "bank_account": "12345",
+            "branch_number": "001"
+        })
+
+        # Attempt to create assignment with non-existent elderly
+        response = await client.post("/caregiver-assignments/", json={
+            "caregiver_id": 101,
+            "elderly_id": 999  # Non-existent elderly
+        })
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Elderly not found"
+
+@pytest.mark.asyncio
+async def test_delete_assignment_success(setup_database):
+    # Add caregiver, elderly, and assignment
+    async with AsyncClient(base_url="http://localhost:8000") as client:
+        await client.post("/caregivers/", json={
+            "id": 101,
+            "name": "John Doe",
+            "bank_name": "Bank A",
+            "bank_account": "12345",
+            "branch_number": "001"
+        })
+        await client.post("/elderly/", json={
+            "id": 201,
+            "name": "Alice"
+        })
+        await client.post("/caregiver-assignments/", json={
+            "caregiver_id": 101,
+            "elderly_id": 201
+        })
+
+        # Delete assignment
+        response = await client.delete("/caregiver-assignments/1")  # Assignment ID 1
+        assert response.status_code == 200
+        assert response.json()["message"] == "Assignment 1 deleted successfully"
+
+@pytest.mark.asyncio
+async def test_delete_nonexistent_assignment(setup_database):
+    async with AsyncClient(base_url="http://localhost:8000") as client:
+        # Attempt to delete a non-existent assignment
+        response = await client.delete("/caregiver-assignments/99")  # Non-existent assignment ID
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Assignment not found"
+
+@pytest.mark.asyncio
+async def test_get_all_assignments_success(setup_database):
+    # Add caregiver, elderly, and assignment
+    async with AsyncClient(base_url="http://localhost:8000") as client:
+        await client.post("/caregivers/", json={
+            "id": 101,
+            "name": "John Doe",
+            "bank_name": "Bank A",
+            "bank_account": "12345",
+            "branch_number": "001"
+        })
+        await client.post("/elderly/", json={
+            "id": 201,
+            "name": "Alice"
+        })
+        await client.post("/caregiver-assignments/", json={
+            "caregiver_id": 101,
+            "elderly_id": 201
+        })
+
+        # Retrieve all assignments
+        response = await client.get("/caregiver-assignments/")
+        assert response.status_code == 200
+        assignments = response.json()
+        assert len(assignments) == 1
+        assert assignments[0]["caregiver_id"] == 101
+        assert assignments[0]["elderly_id"] == 201
      
