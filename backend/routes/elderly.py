@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from models.elderly import Elderly
 from models.task import Task
 from models.medication import Medication
+from models.caregiver_assignments import CaregiverAssignment
 from schemas.medication import MedicationCreate, MedicationResponse
 from schemas.elderly import ElderlySchema, ElderlyCreate
 from schemas.task import TaskSchema, TaskCreate
@@ -27,6 +28,14 @@ def add_elderly(elderly: ElderlyCreate, db: Session = Depends(get_db)):
 @router.get("/", response_model=list[ElderlySchema])
 def get_all_elderly(db: Session = Depends(get_db)):
     return db.query(Elderly).all()
+
+# Get a specific elderly person by ID
+@router.get("/{elderly_id}", response_model=ElderlySchema)
+def get_elderly_by_id(elderly_id: int, db: Session = Depends(get_db)):
+    elderly = db.query(Elderly).filter(Elderly.id == elderly_id).first()
+    if not elderly:
+        raise HTTPException(status_code=404, detail="Elderly not found")
+    return elderly
 
 # Delete an elderly person by ID
 @router.delete("/{elderly_id}")

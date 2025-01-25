@@ -23,6 +23,11 @@ def view_data():
                         st.markdown("**Medications:**")
                         for med in entry.get("medications", []):
                             st.write(f"- {med['name']} ({med['dosage']}, {med['frequency']})")
+                        st.markdown("**Caregivers:**")
+                        for assignment in entry.get("assignments", []):
+                            caregiver_info = fetch_data(f"caregivers/{assignment['caregiver_id']}")
+                            st.write(f"- {caregiver_info['name']} (ID: {caregiver_info['id']})") 
+
 
             # Display Caregiver data
             elif data_type == "Caregivers":
@@ -32,6 +37,10 @@ def view_data():
                         st.markdown(f"**Bank Name:** {caregiver['bank_name']}")
                         st.markdown(f"**Bank Account:** {caregiver['bank_account']}")
                         st.markdown(f"**Branch Number:** {caregiver['branch_number']}")
+                        st.markdown("**Elderly Individuals:**")
+                        for assignment in caregiver.get("assignments", []):
+                            elderly_info = fetch_data(f"elderly/{assignment['elderly_id']}")
+                            st.write(f"- {elderly_info['name']} (ID: {elderly_info['id']})")
                         
                         # Format salary details
                         salary_data = caregiver.get('salary', {})

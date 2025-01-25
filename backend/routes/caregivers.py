@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from fastapi.responses import FileResponse
 from models.caregiver import Caregiver
+from models.caregiver_assignments import CaregiverAssignment
 from schemas.caregiver import CaregiverCreate, CaregiverUpdateSalary, CaregiverResponse
 from db.database import get_db
 from utils.pdf_generator import generate_caregiver_pdf
@@ -29,6 +30,14 @@ def add_caregiver(caregiver: CaregiverCreate, db: Session = Depends(get_db)):
 @router.get("/", response_model=list[CaregiverResponse])
 def get_caregivers(db: Session = Depends(get_db)):
     return db.query(Caregiver).all()
+
+# Get a specific caregiver by ID
+@router.get("/{caregiver_id}", response_model=CaregiverResponse)
+def get_caregiver_by_id(caregiver_id: int, db: Session = Depends(get_db)):
+    caregiver = db.query(Caregiver).filter(Caregiver.id == caregiver_id).first()
+    if not caregiver:
+        raise HTTPException(status_code=404, detail="Caregiver not found")
+    return caregiver
 
 @router.put("/{id}/update-salary", response_model=CaregiverResponse)
 def update_salary(id: int, salary_update: CaregiverUpdateSalary, db: Session = Depends(get_db)):

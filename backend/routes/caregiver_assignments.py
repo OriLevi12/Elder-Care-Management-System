@@ -20,6 +20,21 @@ def create_assignment(assignment: CaregiverAssignmentCreate, db: Session = Depen
     if not elderly:
         raise HTTPException(status_code=404, detail="Elderly not found")
     
+    # Check if the assignment already exists
+    existing_assignment = (
+        db.query(CaregiverAssignment)
+        .filter(
+            CaregiverAssignment.caregiver_id == assignment.caregiver_id,
+            CaregiverAssignment.elderly_id == assignment.elderly_id
+        )
+        .first()
+    )
+    if existing_assignment:
+        raise HTTPException(
+            status_code=400,
+            detail="Assignment between this caregiver and elderly already exists"
+        )
+    
     # Create the assignment
     new_assignment = CaregiverAssignment(caregiver_id=assignment.caregiver_id, elderly_id=assignment.elderly_id)
     db.add(new_assignment)

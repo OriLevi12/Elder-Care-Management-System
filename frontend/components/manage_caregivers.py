@@ -1,10 +1,11 @@
 import streamlit as st
-from api_client import fetch_data, delete_data, update_salary, generate_pdf
+from api_client import fetch_data, add_data, delete_data, update_salary, generate_pdf
 
 def manage_caregivers():
-    st.subheader("🧑‍⚕️ Manage Caregivers")
+    st.subheader("Manage Caregivers")
     try:
         caregiver_data = fetch_data("caregivers")
+        elderly_data = fetch_data("elderly")
         for caregiver in caregiver_data:
             with st.expander(f"{caregiver['name']} (ID: {caregiver['id']})"):
                 # Layout: Delete button on the right
@@ -18,7 +19,7 @@ def manage_caregivers():
                         continue  # Skip rendering tabs for deleted caregiver
 
                 # Tabs for managing caregiver content
-                tab1, tab2 = st.tabs(["Update Salary", "Generate Payslip"])
+                tab1, tab2, tab3, tab4 = st.tabs(["Update Salary", "Generate Payslip", "Assign Elderly", "Cancel assignment"])
 
                 # Update Salary Tab
                 with tab1:
@@ -52,5 +53,27 @@ def manage_caregivers():
                             file_name=f"caregiver_{caregiver['id']}_payslip.pdf",
                             mime="application/pdf"
                         )
+
+                with tab3:  # New tab for assigning elderly
+                    st.markdown("**Assign an Elderly Individual**")
+                    elderly_options = {elderly['id']: elderly['name'] for elderly in elderly_data}
+                    selected_elderly_id = st.selectbox("Select Elderly", options=list(elderly_options.keys()), format_func=lambda x: elderly_options[x], key=f"select_elderly_{caregiver['id']}")
+                    if st.button(f"Assign Elderly to {caregiver['name']}", key=f"assign_elderly_{caregiver['id']}"):
+                        payload = {"caregiver_id": caregiver['id'], "elderly_id": selected_elderly_id}
+                        add_data("caregiver-assignments", payload)
+                        st.success(f"Elderly assigned successfully to {caregiver['name']}!")    
+
+                with tab4:  # New tab for unassign elderly
+                    st.markdown("**Unassign an Elderly Individual**")
+                    for assignment in caregiver.get("assignments", []):
+                        elderly_info = fetch_data(f"elderly/{assignment['elderly_id']}")
+                        col1, col2 = st.columns([8, 2])
+                        with col1:
+                            st.write(f"- {elderly_info['name']} (ID: {elderly_info['id']})")
+                        with col2:
+                            if st.button(f"Unassign {elderly_info['name']}", key=f"delete_assignment_{assignment['id']}"):
+                                delete_data(f"caregiver-assignments/{assignment['id']}")
+                                st.success(f"Elderly {elderly_info['name']} removed successfully!")
+                            
     except RuntimeError as e:
         st.error(str(e))
