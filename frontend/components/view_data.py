@@ -2,10 +2,10 @@ import streamlit as st
 from api_client import fetch_data
 
 def view_data():
-    st.subheader("📊 View Data")
-    data_type = st.selectbox("Select data type", ["Elderly", "Caregivers"])
+    st.subheader("📊 Elderly & Caregivers Overview")
+    data_type = st.selectbox("Choose profile type", ["Elderly", "Caregivers"])
 
-    if st.button("Fetch Data"):
+    if st.button("Show information"):
         try:
             # Fetch data from the API
             data = fetch_data(data_type.lower())

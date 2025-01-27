@@ -11,16 +11,16 @@ st.markdown("<hr>", unsafe_allow_html=True)
 st.sidebar.image("media/elder_care_logo.png", use_container_width=True)
 
 # Menu options
-menu = ["View Data", "Manage Elderly", "Manage Caregivers", "Add Data"]
+menu = ["Elderly & Caregivers", "Manage Elderly", "Manage Caregivers", "Add Elderly/Caregiver"]
 choice = st.sidebar.radio("Menu", menu)
 
 # Route actions based on choice
-if choice == "View Data":
+if choice == "Elderly & Caregivers":
     view_data()
 elif choice == "Manage Elderly":
     manage_elderly()
 elif choice == "Manage Caregivers":
     manage_caregivers()
-elif choice == "Add Data":
+elif choice == "Add Elderly/Caregiver":
     add_data_ui()
 

@@ -2,8 +2,8 @@ import streamlit as st
 from api_client import add_data, fetch_data
 
 def add_data_ui():
-    st.subheader("➕ Add Data")
-    data_type = st.selectbox("Select data type to add", ["Elderly", "Caregiver"])
+    st.subheader("➕ Add Elderly & Caregivers")
+    data_type = st.selectbox("Choose profile type", ["Elderly", "Caregiver"])
 
     if data_type == "Elderly":
         id = st.number_input("ID", min_value=1, step=1)
