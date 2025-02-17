@@ -82,5 +82,5 @@ Once the application is running, you can access the UI of the Elder Care Managem
 
  ---
 ## illustration
-![application design](frontend/media/applicationdesign.png)
+![application design](frontend/media/ApplicationDesign.png)
 
