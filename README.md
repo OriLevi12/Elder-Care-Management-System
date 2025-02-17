@@ -1,16 +1,17 @@
 
 # Elder Care Management System
 
-The Elder Care Management System is designed primarily for elderly individuals and their guardians, providing tools to manage caregivers, medications, and task lists. The system also generates a payment form detailing the caregiver's required salary, simplifying financial management for private care.
-
-While the system is tailored for private use, it also includes functionality for managing elder care facilities, with the option for future expansions to enhance this capability.
+The Elder Care Management System is an innovative and user-friendly platform designed to enhance the quality of life for elderly individuals while simplifying care management for families, guardians, caregivers, and elder care facilities.
 
 ---
 
 ## ✨ Features
 1. 🛠️ Manage caregivers, elderly individuals, tasks, and medications.
 2. 📝 Generate a PDF payment report for caregivers.
-3. 🚀 Flexible and extensible design for future enhancements.
+3. 🔄 Assign and unassign caregivers to elderly individuals.
+4. 🏥 View comprehensive caregiver and elderly profiles
+5. 🚀 Flexible and extensible design for future enhancements.
+
 
 ---
 
@@ -77,3 +78,9 @@ Once the application is running, you can access the UI of the Elder Care Managem
 **Ori Levi**  
 📧 Email: Leviori1218@gmail.com  
 🐙 GitHub: [OriLevi12](https://github.com/OriLevi12)
+
+
+ ---
+## illustration
+![application design](frontend/media/applicationdesign.png)
+
