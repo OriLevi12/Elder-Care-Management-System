@@ -3,7 +3,6 @@
 
 The Elder Care Management System is an innovative and user-friendly platform designed to enhance the quality of life for elderly individuals while simplifying care management for families, guardians, caregivers, and elder care facilities.
 
----
 
 ## ✨ Features
 1. 🛠️ Manage caregivers, elderly individuals, tasks, and medications.
@@ -13,7 +12,65 @@ The Elder Care Management System is an innovative and user-friendly platform des
 5. 🚀 Flexible and extensible design for future enhancements.
 
 
----
+## 📂 Project Structure
+```
+Elder-Care/
+│── backend/
+│   │── db/                # Database configuration and connection
+│   │   │── __init__.py
+│   │   │── database.py
+│   │
+│   │── models/            # SQLAlchemy models for database
+│   │   │── __init__.py
+│   │   │── caregiver.py
+│   │   │── caregiver_assignments.py
+│   │   │── elderly.py
+│   │   │── medication.py
+│   │   │── task.py
+│   │
+│   │── routes/            # FastAPI route handlers
+│   │   │── __init__.py
+│   │   │── caregiver_assignments.py
+│   │   │── caregivers.py
+│   │   │── elderly.py
+│   │
+│   │── schemas/           # Pydantic schemas for data validation
+│   │   │── caregiver.py
+│   │   │── caregiver_assignment.py
+│   │   │── elderly.py
+│   │   │── medication.py
+│   │   │── task.py
+│   │
+│   │── utils/             # Utility functions (e.g., PDF generation)
+│   │   │── __init__.py
+│   │   │── pdf_generator.py
+│   │
+│   │── Tests/             # Automated test scripts
+│   │   │── test_api_integration.py
+│   │   │── test_units.py
+│   │
+│   │── Dockerfile         # Backend containerization
+│   │── main.py            # FastAPI application entry point
+│   │── requirements.txt   # Backend dependencies
+│
+│── frontend/
+│   │── components/        # Streamlit UI components
+│   │   │── __init__.py
+│   │   │── add_data.py
+│   │   │── manage_caregivers.py
+│   │   │── manage_elderly.py
+│   │   │── view_data.py
+│   │
+│   │── Dockerfile         # Frontend containerization
+│   │── api_client.py      # Handles API communication
+│   │── requirements.txt   # Frontend dependencies
+│   │── ui.py              # Streamlit main UI file
+│
+│── docker-compose.yml     # Docker configuration for services
+│── README.md              # Project documentation
+│── pytest.ini             # Pytest configuration
+```
+
 
 ## 💻 Technologies Used
 - **FastAPI**: Backend framework.
@@ -24,7 +81,11 @@ The Elder Care Management System is an innovative and user-friendly platform des
 - **FPDF**: PDF generation.
 - **pytest**: Testing framework.
 
----
+
+## 🎥 Demo Video
+
+[![Watch the video](https://img.youtube.com/vi/5YUIZpneDnw/hqdefault.jpg)](https://youtu.be/5YUIZpneDnw)
+
 
 ## 🚀 Installation
 
@@ -40,7 +101,6 @@ git clone https://github.com/EASS-HIT-PART-A-2024-CLASS-VI/Elder-Care.git
 cd Elder-Care
 ```
 
----
 
 ### Step 3: Create a `.env` File
 Create a `.env` file in the project's root directory and add the following variables:
@@ -51,13 +111,11 @@ POSTGRES_DB=elder_care_db
 DATABASE_URL=postgresql://your_user:your_password@localhost:5432/elder_care_db
 ```
 
----
 
 ### Step 4: Build and Run the Application with Docker
 ```bash
 docker-compose up --build
 ```
----
 
 ### Step 5: Access the Application UI
 Once the application is running, you can access the UI of the Elder Care Management System in your web browser:
@@ -72,15 +130,11 @@ Once the application is running, you can access the UI of the Elder Care Managem
 - **URL**: [http://localhost:8000/docs](http://localhost:8000/docs)  
   - Provides API documentation and allows you to test the backend endpoints directly.  
 
- ---
 
 ## 📬 Contact Info
 **Ori Levi**  
 📧 Email: Leviori1218@gmail.com  
 🐙 GitHub: [OriLevi12](https://github.com/OriLevi12)
 
-
- ---
 ## illustration
 ![application design](frontend/media/ApplicationDesign.png)
-
