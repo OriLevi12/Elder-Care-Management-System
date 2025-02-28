@@ -12,6 +12,8 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   backend:
+    build:
+      context: ./backend
     image: elder-care-app
     container_name: eldercare_backend
     environment:
