@@ -1,4 +1,4 @@
-from pydantic import BaseModel,constr
+from pydantic import BaseModel,constr, ConfigDict
 
 class MedicationCreate(BaseModel):
     name: constr(min_length=1, strip_whitespace=True) 
@@ -11,5 +11,4 @@ class MedicationResponse(BaseModel):
     dosage: str
     frequency: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

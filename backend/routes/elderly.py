@@ -8,6 +8,7 @@ from schemas.medication import MedicationCreate, MedicationResponse
 from schemas.elderly import ElderlySchema, ElderlyCreate
 from schemas.task import TaskSchema, TaskCreate
 from db.database import get_db
+from utils.redis_cache import get_from_cache, set_in_cache, delete_from_cache
 
 router = APIRouter()
 
@@ -22,12 +23,34 @@ def add_elderly(elderly: ElderlyCreate, db: Session = Depends(get_db)):
     db.add(new_elderly)
     db.commit()
     db.refresh(new_elderly)
+
+    print("🧹 Clearing elderly list cache and specific elderly cache")
+    delete_from_cache("elderly_list")  # Clear cache for elderly list
+    delete_from_cache(f"elderly_{new_elderly.id}")  # Clear cache for specific elderly
     return new_elderly
 
 # Get all elderly persons
 @router.get("/", response_model=list[ElderlySchema])
 def get_all_elderly(db: Session = Depends(get_db)):
-    return db.query(Elderly).all()
+    cache_key = "elderly_list"
+
+    # Try to retrieve the data from Redis cache
+    cached_data = get_from_cache(cache_key)
+    if cached_data:
+        # Deserialize each dict back into an ElderlySchema object
+        print("✅ Retrieved elderly list from Redis cache")
+        return [ElderlySchema(**e) for e in cached_data]
+
+    # If not cached, fetch from database and serialize
+    elderly = db.query(Elderly).all()
+    result = [ElderlySchema.from_orm(e) for e in elderly]
+    print("📦 Retrieved elderly list from DB and storing in Redis")
+    # Cache the serialized data (as list of dicts) for 5 minutes
+    set_in_cache(cache_key, [e.dict() for e in result], ttl=300)
+
+    return result
+
+
 
 # Get a specific elderly person by ID
 @router.get("/{elderly_id}", response_model=ElderlySchema)
@@ -45,6 +68,8 @@ def delete_elderly(elderly_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Elderly not found")
     db.delete(elderly)
     db.commit()
+    delete_from_cache("elderly_list")  # Clear cache for elderly list
+    delete_from_cache(f"elderly_{elderly_id}")  # Clear cache for specific
     return {"message": f"Elderly {elderly_id} deleted successfully"}
 
 # Add a new task for an elderly person

@@ -42,5 +42,6 @@ uvloop==0.21.0
 watchfiles==1.0.0
 websockets==14.1
 fpdf
+redis
 
 

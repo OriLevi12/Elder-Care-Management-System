@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Dict,List
 from schemas.caregiver_assignment import CaregiverAssignmentResponse
 
@@ -9,6 +9,7 @@ class CaregiverCreate(BaseModel):
     bank_account: str
     branch_number: str
 
+
 class CaregiverUpdateSalary(BaseModel):
     salary_price: float
     salary_amount: int
@@ -16,6 +17,7 @@ class CaregiverUpdateSalary(BaseModel):
     saturday_amount: int
     allowance_price: float
     allowance_amount: int
+
 
 class CaregiverResponse(BaseModel):
     id: int
@@ -29,5 +31,4 @@ class CaregiverResponse(BaseModel):
     total_bank: float
     assignments: List[CaregiverAssignmentResponse] = []
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List
 from schemas.task import TaskSchema
 from schemas.medication import MedicationResponse
@@ -11,8 +11,7 @@ class ElderlySchema(BaseModel):
     medications: List[MedicationResponse] = []
     assignments: List[CaregiverAssignmentResponse] = []
     
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class ElderlyCreate(BaseModel):
     id: int  
