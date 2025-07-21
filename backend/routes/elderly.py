@@ -9,48 +9,21 @@ from schemas.elderly import ElderlySchema, ElderlyCreate
 from schemas.task import TaskSchema, TaskCreate
 from db.database import get_db
 from utils.redis_cache import get_from_cache, set_in_cache, delete_from_cache
+from services.elderly_service import get_all_elderly_service
+from services.elderly_service import add_elderly_service
+from services.elderly_service import delete_elderly_service
 
 router = APIRouter()
 
 # Create a new elderly person
 @router.post("/", response_model=ElderlySchema)
 def add_elderly(elderly: ElderlyCreate, db: Session = Depends(get_db)):
-    existing_elderly = db.query(Elderly).filter(Elderly.id == elderly.id).first()
-    if existing_elderly:
-        raise HTTPException(status_code=400, detail="Elderly with this ID already exists")
-
-    new_elderly = Elderly(id=elderly.id, name=elderly.name)
-    db.add(new_elderly)
-    db.commit()
-    db.refresh(new_elderly)
-
-    print("🧹 Clearing elderly list cache and specific elderly cache")
-    delete_from_cache("elderly_list")  # Clear cache for elderly list
-    delete_from_cache(f"elderly_{new_elderly.id}")  # Clear cache for specific elderly
-    return new_elderly
+    return add_elderly_service(elderly, db)
 
 # Get all elderly persons
 @router.get("/", response_model=list[ElderlySchema])
 def get_all_elderly(db: Session = Depends(get_db)):
-    cache_key = "elderly_list"
-
-    # Try to retrieve the data from Redis cache
-    cached_data = get_from_cache(cache_key)
-    if cached_data:
-        # Deserialize each dict back into an ElderlySchema object
-        print("✅ Retrieved elderly list from Redis cache")
-        return [ElderlySchema(**e) for e in cached_data]
-
-    # If not cached, fetch from database and serialize
-    elderly = db.query(Elderly).all()
-    result = [ElderlySchema.from_orm(e) for e in elderly]
-    print("📦 Retrieved elderly list from DB and storing in Redis")
-    # Cache the serialized data (as list of dicts) for 5 minutes
-    set_in_cache(cache_key, [e.dict() for e in result], ttl=300)
-
-    return result
-
-
+    return get_all_elderly_service(db)
 
 # Get a specific elderly person by ID
 @router.get("/{elderly_id}", response_model=ElderlySchema)
@@ -63,14 +36,7 @@ def get_elderly_by_id(elderly_id: int, db: Session = Depends(get_db)):
 # Delete an elderly person by ID
 @router.delete("/{elderly_id}")
 def delete_elderly(elderly_id: int, db: Session = Depends(get_db)):
-    elderly = db.query(Elderly).filter(Elderly.id == elderly_id).first()
-    if not elderly:
-        raise HTTPException(status_code=404, detail="Elderly not found")
-    db.delete(elderly)
-    db.commit()
-    delete_from_cache("elderly_list")  # Clear cache for elderly list
-    delete_from_cache(f"elderly_{elderly_id}")  # Clear cache for specific
-    return {"message": f"Elderly {elderly_id} deleted successfully"}
+    return delete_elderly_service(elderly_id, db)
 
 # Add a new task for an elderly person
 @router.post("/{elderly_id}/tasks", response_model=TaskSchema)
