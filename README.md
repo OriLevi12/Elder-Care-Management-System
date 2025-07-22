@@ -34,6 +34,10 @@ Elder-Care/
 │   │   │── caregivers.py
 │   │   │── elderly.py
 │   │
+│   │── services/          # Business logic layer with Redis caching
+│   │   │── __init__.py
+│   │   │── elderly_service.py
+│   │
 │   │── schemas/           # Pydantic schemas for data validation
 │   │   │── caregiver.py
 │   │   │── caregiver_assignment.py
@@ -41,9 +45,10 @@ Elder-Care/
 │   │   │── medication.py
 │   │   │── task.py
 │   │
-│   │── utils/             # Utility functions (e.g., PDF generation)
+│   │── utils/             # Utility functions (e.g., PDF generation, Redis caching)
 │   │   │── __init__.py
 │   │   │── pdf_generator.py
+│   │   │── redis_cache.py
 │   │
 │   │── Tests/             # Automated test scripts
 │   │   │── test_api_integration.py
@@ -75,6 +80,7 @@ Elder-Care/
 ## 💻 Technologies Used
 - **FastAPI**: Backend framework.
 - **PostgreSQL**: Database management.
+- **Redis**: Caching layer for improved performance.
 - **Docker**: Containerization.
 - **SQLAlchemy**: ORM for database interactions.
 - **Pydantic**: Data validation and settings management.
