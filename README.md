@@ -37,6 +37,7 @@ Elder-Care/
 │   │── services/          # Business logic layer with Redis caching
 │   │   │── __init__.py
 │   │   │── elderly_service.py
+│   │   │── caregiver_service.py
 │   │
 │   │── schemas/           # Pydantic schemas for data validation
 │   │   │── caregiver.py
