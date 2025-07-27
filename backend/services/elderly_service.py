@@ -173,7 +173,7 @@ def add_task_to_elderly_service(elderly_id: int, task: TaskCreate, db: Session) 
     
     # Invalidate related caches to ensure data consistency
     delete_from_cache(f"elderly_{elderly_id}")  # Clear elderly cache
-    delete_from_cache(f"tasks_elderly_{elderly_id}")  # Clear tasks cache
+    delete_from_cache("elderly_list")  # Clear elderly list cache
     
     return new_task
 
@@ -203,7 +203,7 @@ def delete_task_from_elderly_service(elderly_id: int, task_id: int, db: Session)
     
     # Invalidate related caches to ensure data consistency
     delete_from_cache(f"elderly_{elderly_id}")  # Clear elderly cache
-    delete_from_cache(f"tasks_elderly_{elderly_id}")  # Clear tasks cache
+    delete_from_cache("elderly_list")  # Clear elderly list cache
     
     return {"message": f"Task {task_id} deleted successfully"}
 
@@ -235,7 +235,7 @@ def update_task_status_service(elderly_id: int, task_id: int, new_status: str, d
     
     # Invalidate related caches to ensure data consistency
     delete_from_cache(f"elderly_{elderly_id}")  # Clear elderly cache
-    delete_from_cache(f"tasks_elderly_{elderly_id}")  # Clear tasks cache
+    delete_from_cache("elderly_list")  # Clear elderly list cache
     
     return task
 
@@ -274,7 +274,7 @@ def add_medication_to_elderly_service(elderly_id: int, medication: MedicationCre
     
     # Invalidate related caches to ensure data consistency
     delete_from_cache(f"elderly_{elderly_id}")  # Clear elderly cache
-    delete_from_cache(f"medications_elderly_{elderly_id}")  # Clear medications cache
+    delete_from_cache("elderly_list")  # Clear elderly list cache
     
     return new_medication
 
@@ -347,6 +347,6 @@ def delete_medication_from_elderly_service(elderly_id: int, medication_id: int, 
     
     # Invalidate related caches to ensure data consistency
     delete_from_cache(f"elderly_{elderly_id}")  # Clear elderly cache
-    delete_from_cache(f"medications_elderly_{elderly_id}")  # Clear medications cache
+    delete_from_cache("elderly_list")  # Clear elderly list cache
     
     return {"message": f"Medication '{medication_name}' deleted successfully"}
