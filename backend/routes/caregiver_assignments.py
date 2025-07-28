@@ -5,53 +5,70 @@ from models.caregiver import Caregiver
 from models.elderly import Elderly 
 from models.caregiver_assignments import CaregiverAssignment
 from schemas.caregiver_assignment import CaregiverAssignmentCreate, CaregiverAssignmentResponse
+from services.caregiver_assignment_service import (
+    create_assignment_service,
+    get_all_assignments_service,
+    delete_assignment_service
+)
 
 router = APIRouter()
 
+# ==================== CAREGIVER ASSIGNMENT OPERATIONS ====================
+
 @router.post("/", response_model=CaregiverAssignmentResponse)
 def create_assignment(assignment: CaregiverAssignmentCreate, db: Session = Depends(get_db)):
-    # Verify caregiver exists
-    caregiver = db.query(Caregiver).filter(Caregiver.id == assignment.caregiver_id).first()
-    if not caregiver:
-        raise HTTPException(status_code=404, detail="Caregiver not found")
+    """
+    Create a new caregiver assignment.
     
-    # Verify elderly exists
-    elderly = db.query(Elderly).filter(Elderly.id == assignment.elderly_id).first()
-    if not elderly:
-        raise HTTPException(status_code=404, detail="Elderly not found")
+    This endpoint uses Redis cache invalidation to ensure data consistency.
+    When an assignment is created, both caregiver and elderly caches are cleared.
     
-    # Check if the assignment already exists
-    existing_assignment = (
-        db.query(CaregiverAssignment)
-        .filter(
-            CaregiverAssignment.caregiver_id == assignment.caregiver_id,
-            CaregiverAssignment.elderly_id == assignment.elderly_id
-        )
-        .first()
-    )
-    if existing_assignment:
-        raise HTTPException(
-            status_code=400,
-            detail="Assignment between this caregiver and elderly already exists"
-        )
-    
-    # Create the assignment
-    new_assignment = CaregiverAssignment(caregiver_id=assignment.caregiver_id, elderly_id=assignment.elderly_id)
-    db.add(new_assignment)
-    db.commit()
-    db.refresh(new_assignment)
-    return new_assignment
-
+    Args:
+        assignment: CaregiverAssignmentCreate schema containing assignment data
+        db: Database session (injected by FastAPI)
+        
+    Returns:
+        CaregiverAssignmentResponse: The created assignment
+        
+    Raises:
+        HTTPException: If caregiver or elderly not found, or assignment already exists
+    """
+    return create_assignment_service(assignment, db)
 
 @router.get("/", response_model=list[CaregiverAssignmentResponse])
 def get_all_assignments(db: Session = Depends(get_db)):
-    return db.query(CaregiverAssignment).all()
+    """
+    Retrieve all caregiver assignments.
+    
+    This endpoint uses Redis caching for improved performance.
+    - First request: Data fetched from database and cached
+    - Subsequent requests: Data served from Redis cache
+    - Cache TTL: 300 seconds (5 minutes)
+    
+    Args:
+        db: Database session (injected by FastAPI)
+        
+    Returns:
+        list[CaregiverAssignmentResponse]: List of all assignments
+    """
+    return get_all_assignments_service(db)
 
 @router.delete("/{assignment_id}")
 def delete_assignment(assignment_id: int, db: Session = Depends(get_db)):
-    assignment = db.query(CaregiverAssignment).filter(CaregiverAssignment.id == assignment_id).first()
-    if not assignment:
-        raise HTTPException(status_code=404, detail="Assignment not found")
-    db.delete(assignment)
-    db.commit()
-    return {"message": f"Assignment {assignment_id} deleted successfully"}
+    """
+    Delete a caregiver assignment.
+    
+    This endpoint uses Redis cache invalidation to ensure data consistency.
+    When an assignment is deleted, both caregiver and elderly caches are cleared.
+    
+    Args:
+        assignment_id: ID of the assignment to delete
+        db: Database session (injected by FastAPI)
+        
+    Returns:
+        dict: Success message
+        
+    Raises:
+        HTTPException: If assignment not found
+    """
+    return delete_assignment_service(assignment_id, db)
