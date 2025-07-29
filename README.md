@@ -38,6 +38,7 @@ Elder-Care/
 │   │   │── __init__.py
 │   │   │── elderly_service.py
 │   │   │── caregiver_service.py
+│   │   │── caregiver_assignment_service.py
 │   │
 │   │── schemas/           # Pydantic schemas for data validation
 │   │   │── caregiver.py
@@ -136,6 +137,71 @@ Once the application is running, you can access the UI of the Elder Care Managem
 **Backend API (Swagger Documentation):**  
 - **URL**: [http://localhost:8000/docs](http://localhost:8000/docs)  
   - Provides API documentation and allows you to test the backend endpoints directly.  
+
+
+## 🧪 Testing
+
+The project includes comprehensive automated tests that run inside Docker containers to ensure proper access to Redis cache and PostgreSQL database.
+
+### Running Tests
+
+**Prerequisites:**
+- Make sure Docker containers are running: `docker-compose up`
+- All services (backend, database, Redis) must be active
+
+**Run All Tests:**
+```bash
+docker-compose exec backend python -m pytest Tests/ -v
+```
+
+**Run Specific Test File:**
+```bash
+docker-compose exec backend python -m pytest Tests/test_api_integration.py -v
+```
+
+**Run Specific Test:**
+```bash
+docker-compose exec backend python -m pytest Tests/test_api_integration.py::test_add_caregiver_success -v
+```
+
+**Run Tests with Coverage:**
+```bash
+docker-compose exec backend python -m pytest Tests/ --cov=. --cov-report=term-missing
+```
+
+### Test Structure
+
+- **`test_api_integration.py`**: Integration tests for API endpoints
+  - Tests all CRUD operations for caregivers, elderly, tasks, medications
+  - Tests caregiver assignments functionality
+  - Tests error handling and edge cases
+
+- **`test_units.py`**: Unit tests for data models
+  - Tests Caregiver, Elderly, and Task model functionality
+  - Tests salary calculations and data validation
+
+### Why Run Tests in Docker?
+
+- **Redis Access**: Tests need access to Redis cache running in Docker
+- **Database Access**: Tests need access to PostgreSQL database
+- **Consistent Environment**: Ensures tests run in the same environment as the application
+- **Service Dependencies**: All required services (Redis, PostgreSQL) are available
+
+### Test Results
+
+When tests pass successfully, you should see output like:
+```
+======================================================== test session starts =========================================================
+platform linux -- Python 3.10.18, pytest-8.4.1, pluggy-1.6.0
+collected 26 items
+
+Tests/test_api_integration.py::test_add_caregiver_success PASSED
+Tests/test_api_integration.py::test_add_existing_caregiver PASSED
+...
+Tests/test_units.py::test_update_task_status PASSED
+
+========================================================= 26 passed in 2.97s =========================================================
+```
 
 
 ## 📬 Contact Info
