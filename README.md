@@ -27,6 +27,7 @@ Elder-Care/
 │   │   │── elderly.py
 │   │   │── medication.py
 │   │   │── task.py
+│   │   │── user.py
 │   │
 │   │── routes/            # FastAPI route handlers
 │   │   │── __init__.py
