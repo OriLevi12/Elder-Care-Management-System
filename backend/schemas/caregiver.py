@@ -8,6 +8,7 @@ class CaregiverCreate(BaseModel):
     bank_name: str
     bank_account: str
     branch_number: str
+    # user_id is automatically added by backend from logged-in user
 
 
 class CaregiverUpdateSalary(BaseModel):
@@ -25,6 +26,7 @@ class CaregiverResponse(BaseModel):
     bank_name: str
     bank_account: str
     branch_number: str
+    user_id: int  # Links to user who owns this data
     salary: Dict[str, float]
     saturday: Dict[str, float]
     allowance: Dict[str, float]
