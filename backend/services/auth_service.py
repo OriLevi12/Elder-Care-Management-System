@@ -2,7 +2,8 @@ import os
 from datetime import datetime, timedelta
 from typing import Optional
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Header, Depends
+from db.database import get_db
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from models.user import User
@@ -52,16 +53,16 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     Returns:
         str: The JWT token
     """
-    to_encode = data.copy()  # Don't modify original data
+    to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta  # Use custom expiration
+        expire = datetime.utcnow() + expires_delta 
     else:
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)  # Use default 30 min
     
     to_encode.update({"exp": expire})  # Add expiration to token data
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)  # Create signed token
     return encoded_jwt
-
+    
 def verify_token(token: str) -> Optional[dict]:
     """
     Verify and decode a JWT token.
@@ -136,7 +137,7 @@ def login_user(login_data: LoginRequest, db: Session) -> LoginResponse:
         full_name=user.full_name
     )
 
-def get_current_user(token: str, db: Session) -> User:
+def get_current_user(authorization: str = Header(None) ,db: Session = Depends(get_db)) -> User:
     """
     Get current user from JWT token.
     
@@ -155,6 +156,19 @@ def get_current_user(token: str, db: Session) -> User:
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No authorization header",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Extract token from "Bearer <token>"
+    try:
+        token = authorization.replace("Bearer ", "")
+    except:
+        raise credentials_exception
     
     payload = verify_token(token)
     if payload is None:

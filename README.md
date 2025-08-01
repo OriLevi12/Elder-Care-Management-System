@@ -31,17 +31,20 @@ Elder-Care/
 │   │
 │   │── routes/            # FastAPI route handlers
 │   │   │── __init__.py
+│   │   │── auth.py
 │   │   │── caregiver_assignments.py
 │   │   │── caregivers.py
 │   │   │── elderly.py
 │   │
 │   │── services/          # Business logic layer with Redis caching
 │   │   │── __init__.py
+│   │   │── auth_service.py
 │   │   │── elderly_service.py
 │   │   │── caregiver_service.py
 │   │   │── caregiver_assignment_service.py
 │   │
 │   │── schemas/           # Pydantic schemas for data validation
+│   │   │── auth.py
 │   │   │── caregiver.py
 │   │   │── caregiver_assignment.py
 │   │   │── elderly.py

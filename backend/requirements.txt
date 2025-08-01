@@ -43,5 +43,7 @@ watchfiles==1.0.0
 websockets==14.1
 fpdf
 redis
+python-jose[cryptography]
+passlib[bcrypt]
 
 
