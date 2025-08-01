@@ -68,6 +68,7 @@ Elder-Care/
 │   │── components/        # Streamlit UI components
 │   │   │── __init__.py
 │   │   │── add_data.py
+│   │   │── auth_ui.py
 │   │   │── manage_caregivers.py
 │   │   │── manage_elderly.py
 │   │   │── view_data.py
