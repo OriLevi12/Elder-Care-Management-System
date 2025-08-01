@@ -4,21 +4,27 @@ from db.database import get_db
 from models.caregiver import Caregiver  
 from models.elderly import Elderly 
 from models.caregiver_assignments import CaregiverAssignment
+from models.user import User
 from schemas.caregiver_assignment import CaregiverAssignmentCreate, CaregiverAssignmentResponse
 from services.caregiver_assignment_service import (
     create_assignment_service,
     get_all_assignments_service,
     delete_assignment_service
 )
+from services.auth_service import get_current_user
 
 router = APIRouter()
 
 # ==================== CAREGIVER ASSIGNMENT OPERATIONS ====================
 
 @router.post("/", response_model=CaregiverAssignmentResponse)
-def create_assignment(assignment: CaregiverAssignmentCreate, db: Session = Depends(get_db)):
+def create_assignment(
+    assignment: CaregiverAssignmentCreate, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
-    Create a new caregiver assignment.
+    Create a new caregiver assignment for the current user.
     
     This endpoint uses Redis cache invalidation to ensure data consistency.
     When an assignment is created, both caregiver and elderly caches are cleared.
@@ -26,6 +32,7 @@ def create_assignment(assignment: CaregiverAssignmentCreate, db: Session = Depen
     Args:
         assignment: CaregiverAssignmentCreate schema containing assignment data
         db: Database session (injected by FastAPI)
+        current_user: Current authenticated user (injected by FastAPI)
         
     Returns:
         CaregiverAssignmentResponse: The created assignment
@@ -33,12 +40,15 @@ def create_assignment(assignment: CaregiverAssignmentCreate, db: Session = Depen
     Raises:
         HTTPException: If caregiver or elderly not found, or assignment already exists
     """
-    return create_assignment_service(assignment, db)
+    return create_assignment_service(assignment, current_user.id, db)
 
 @router.get("/", response_model=list[CaregiverAssignmentResponse])
-def get_all_assignments(db: Session = Depends(get_db)):
+def get_all_assignments(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
-    Retrieve all caregiver assignments.
+    Retrieve all caregiver assignments for the current user.
     
     This endpoint uses Redis caching for improved performance.
     - First request: Data fetched from database and cached
@@ -47,16 +57,21 @@ def get_all_assignments(db: Session = Depends(get_db)):
     
     Args:
         db: Database session (injected by FastAPI)
+        current_user: Current authenticated user (injected by FastAPI)
         
     Returns:
-        list[CaregiverAssignmentResponse]: List of all assignments
+        list[CaregiverAssignmentResponse]: List of all assignments for the current user
     """
-    return get_all_assignments_service(db)
+    return get_all_assignments_service(current_user.id, db)
 
 @router.delete("/{assignment_id}")
-def delete_assignment(assignment_id: int, db: Session = Depends(get_db)):
+def delete_assignment(
+    assignment_id: int, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
-    Delete a caregiver assignment.
+    Delete a caregiver assignment for the current user.
     
     This endpoint uses Redis cache invalidation to ensure data consistency.
     When an assignment is deleted, both caregiver and elderly caches are cleared.
@@ -64,11 +79,12 @@ def delete_assignment(assignment_id: int, db: Session = Depends(get_db)):
     Args:
         assignment_id: ID of the assignment to delete
         db: Database session (injected by FastAPI)
+        current_user: Current authenticated user (injected by FastAPI)
         
     Returns:
         dict: Success message
         
     Raises:
-        HTTPException: If assignment not found
+        HTTPException: If assignment not found or doesn't belong to current user
     """
-    return delete_assignment_service(assignment_id, db)
+    return delete_assignment_service(assignment_id, current_user.id, db)
