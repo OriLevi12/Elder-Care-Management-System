@@ -4,11 +4,13 @@ from models.elderly import Elderly
 from models.task import Task
 from models.medication import Medication
 from models.caregiver_assignments import CaregiverAssignment
+from models.user import User
 from schemas.medication import MedicationCreate, MedicationResponse
 from schemas.elderly import ElderlySchema, ElderlyCreate
 from schemas.task import TaskSchema, TaskCreate
 from db.database import get_db
 from utils.redis_cache import get_from_cache, set_in_cache, delete_from_cache
+from services.auth_service import get_current_user
 from services.elderly_service import (
     get_all_elderly_service, 
     add_elderly_service, 
@@ -27,7 +29,11 @@ router = APIRouter()
 # ==================== ELDERLY CRUD OPERATIONS ====================
 
 @router.post("/", response_model=ElderlySchema)
-def add_elderly(elderly: ElderlyCreate, db: Session = Depends(get_db)):
+def add_elderly(
+    elderly: ElderlyCreate, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Create a new elderly person.
     
@@ -44,10 +50,13 @@ def add_elderly(elderly: ElderlyCreate, db: Session = Depends(get_db)):
     Raises:
         HTTPException: If elderly with same ID already exists
     """
-    return add_elderly_service(elderly, db)
+    return add_elderly_service(elderly, current_user.id, db)
 
 @router.get("/", response_model=list[ElderlySchema])
-def get_all_elderly(db: Session = Depends(get_db)):
+def get_all_elderly(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Retrieve all elderly persons.
     
@@ -62,10 +71,14 @@ def get_all_elderly(db: Session = Depends(get_db)):
     Returns:
         list[ElderlySchema]: List of all elderly persons
     """
-    return get_all_elderly_service(db)
+    return get_all_elderly_service(current_user.id, db)
 
 @router.get("/{elderly_id}", response_model=ElderlySchema)
-def get_elderly_by_id(elderly_id: int, db: Session = Depends(get_db)):
+def get_elderly_by_id(
+    elderly_id: int, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Retrieve a specific elderly person by ID.
     
@@ -84,10 +97,14 @@ def get_elderly_by_id(elderly_id: int, db: Session = Depends(get_db)):
     Raises:
         HTTPException: If elderly person not found
     """
-    return get_elderly_by_id_service(elderly_id, db)
+    return get_elderly_by_id_service(elderly_id, current_user.id, db)
 
 @router.delete("/{elderly_id}")
-def delete_elderly(elderly_id: int, db: Session = Depends(get_db)):
+def delete_elderly(
+    elderly_id: int, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Delete an elderly person by ID.
     
@@ -104,12 +121,17 @@ def delete_elderly(elderly_id: int, db: Session = Depends(get_db)):
     Raises:
         HTTPException: If elderly person not found
     """
-    return delete_elderly_service(elderly_id, db)
+    return delete_elderly_service(elderly_id, current_user.id, db)
 
 # ==================== TASK OPERATIONS ====================
 
 @router.post("/{elderly_id}/tasks", response_model=TaskSchema)
-def add_task_to_elderly(elderly_id: int, task: TaskCreate, db: Session = Depends(get_db)):
+def add_task_to_elderly(
+    elderly_id: int, 
+    task: TaskCreate, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Add a new task for an elderly person.
     
@@ -127,10 +149,15 @@ def add_task_to_elderly(elderly_id: int, task: TaskCreate, db: Session = Depends
     Raises:
         HTTPException: If elderly person not found
     """
-    return add_task_to_elderly_service(elderly_id, task, db)
+    return add_task_to_elderly_service(elderly_id, task, current_user.id, db)
 
 @router.delete("/{elderly_id}/tasks/{task_id}")
-def delete_task_from_elderly(elderly_id: int, task_id: int, db: Session = Depends(get_db)):
+def delete_task_from_elderly(
+    elderly_id: int, 
+    task_id: int, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Delete a task for an elderly person.
     
@@ -148,10 +175,16 @@ def delete_task_from_elderly(elderly_id: int, task_id: int, db: Session = Depend
     Raises:
         HTTPException: If task not found
     """
-    return delete_task_from_elderly_service(elderly_id, task_id, db)
+    return delete_task_from_elderly_service(elderly_id, task_id, current_user.id, db)
 
 @router.put("/{elderly_id}/tasks/{task_id}/status", response_model=TaskSchema)
-def update_task_status(elderly_id: int, task_id: int, new_status: str, db: Session = Depends(get_db)):
+def update_task_status(
+    elderly_id: int, 
+    task_id: int, 
+    new_status: str, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Update the status of a task for an elderly person.
     
@@ -170,12 +203,17 @@ def update_task_status(elderly_id: int, task_id: int, new_status: str, db: Sessi
     Raises:
         HTTPException: If task not found
     """
-    return update_task_status_service(elderly_id, task_id, new_status, db)
+    return update_task_status_service(elderly_id, task_id, new_status, current_user.id, db)
 
 # ==================== MEDICATION OPERATIONS ====================
 
 @router.post("/{elderly_id}/medications", response_model=MedicationResponse)
-def add_medication_to_elderly(elderly_id: int, medication: MedicationCreate, db: Session = Depends(get_db)):
+def add_medication_to_elderly(
+    elderly_id: int, 
+    medication: MedicationCreate, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Add a new medication for an elderly person.
     
@@ -193,10 +231,14 @@ def add_medication_to_elderly(elderly_id: int, medication: MedicationCreate, db:
     Raises:
         HTTPException: If elderly person not found
     """
-    return add_medication_to_elderly_service(elderly_id, medication, db)
+    return add_medication_to_elderly_service(elderly_id, medication, current_user.id, db)
 
 @router.get("/{elderly_id}/medications", response_model=list[MedicationResponse])
-def get_medications_for_elderly(elderly_id: int, db: Session = Depends(get_db)):
+def get_medications_for_elderly(
+    elderly_id: int, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Retrieve all medications for an elderly person.
     
@@ -215,10 +257,15 @@ def get_medications_for_elderly(elderly_id: int, db: Session = Depends(get_db)):
     Raises:
         HTTPException: If elderly person not found
     """
-    return get_medications_for_elderly_service(elderly_id, db)
+    return get_medications_for_elderly_service(elderly_id, current_user.id, db)
 
 @router.delete("/{elderly_id}/medications/{medication_id}")
-def delete_medication_from_elderly(elderly_id: int, medication_id: int, db: Session = Depends(get_db)):
+def delete_medication_from_elderly(
+    elderly_id: int, 
+    medication_id: int, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Delete a medication for an elderly person.
     
@@ -236,4 +283,4 @@ def delete_medication_from_elderly(elderly_id: int, medication_id: int, db: Sess
     Raises:
         HTTPException: If medication not found
     """
-    return delete_medication_from_elderly_service(elderly_id, medication_id, db)
+    return delete_medication_from_elderly_service(elderly_id, medication_id, current_user.id, db)
