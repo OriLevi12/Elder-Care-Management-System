@@ -10,7 +10,8 @@ class Caregiver(Base):
     """
     __tablename__ = "caregivers"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)  # Auto-incrementing primary key
+    custom_id = Column(Integer, nullable=False)  # User-specified ID (can be same across users)
     name = Column(String, nullable=False)  # Name of the caregiver
     bank_name = Column(String, nullable=False)  # Bank name for payments
     bank_account = Column(String, nullable=False)  # Bank account number

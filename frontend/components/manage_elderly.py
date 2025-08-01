@@ -56,13 +56,13 @@ def manage_elderly():
             name_class = "highlighted" if len(elderly.get("tasks", [])) > 3 else ""
 
             
-            expander_label = f"{icon} {elderly['name']} (ID: {elderly['id']})"
+            expander_label = f"{icon} {elderly['name']} (ID: {elderly['custom_id']})"
 
             with st.expander(expander_label, expanded=False):
                 col1, col2 = st.columns([8, 2])
                 with col1:
                     st.markdown(f"### 👴 **{elderly['name']}**")
-                    st.markdown(f"🔢 **ID:** {elderly['id']}")
+                    st.markdown(f"🔢 **ID:** {elderly['custom_id']}")
                 with col2:
                     if st.button(f"❌ Delete", key=f"delete_elderly_{elderly['id']}"):
                         delete_data(f"elderly/{elderly['id']}")

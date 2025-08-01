@@ -55,11 +55,11 @@ def view_data():
                     icon = "❤️" if entry.get("assignments") else "🧑‍🦳"
                     
                     
-                    expander_label = f"{entry['name']} (ID: {entry['id']})"
+                    expander_label = f"{entry['name']} (ID: {entry['custom_id']})"
 
                     with st.expander(expander_label, expanded=False):
                         st.markdown(f"### {icon} **{entry['name']}**")
-                        st.markdown(f"🔢 **ID:** {entry['id']}")
+                        st.markdown(f"🔢 **ID:** {entry['custom_id']}")
 
                         #Tasks presentation
                         st.markdown("#### ✅ Tasks:")
@@ -84,18 +84,18 @@ def view_data():
                         if entry.get("assignments"):
                             for assignment in entry["assignments"]:
                                 caregiver_info = fetch_data(f"caregivers/{assignment['caregiver_id']}")
-                                st.success(f"👨‍⚕️ {caregiver_info['name']} (ID: {caregiver_info['id']})")
+                                st.success(f"👨‍⚕️ {caregiver_info['name']} (ID: {caregiver_info['custom_id']})")
                         else:
                             st.error("No caregivers assigned.")
 
             elif data_type == "Caregivers":
                 st.write("### 🏥 Caregivers List:")
                 for caregiver in data:
-                    expander_label = f"{caregiver['name']} (ID: {caregiver['id']})"
+                    expander_label = f"{caregiver['name']} (ID: {caregiver['custom_id']})"
 
                     with st.expander(expander_label, expanded=False):
                         st.markdown(f"### 👨‍⚕️ Name: **{caregiver['name']}**")
-                        st.markdown(f"🔢 **ID:** {caregiver['id']}")
+                        st.markdown(f"🔢 **ID:** {caregiver['custom_id']}")
 
                         st.markdown("#### 🏦 Bank Details:")
                         st.markdown(f"- **Bank Name:** {caregiver.get('bank_name', 'N/A')}")

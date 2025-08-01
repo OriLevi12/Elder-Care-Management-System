@@ -9,8 +9,9 @@ class Elderly(Base):
     """
     __tablename__ = "elderly"
 
-    id = Column(Integer, primary_key=True, index=True)  
-    name = Column(String, nullable=False)  # Name of the elderly person
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)  # Auto-incrementing primary key
+    custom_id = Column(Integer, nullable=False)  # User-specified ID (can be same across users)
+    name = Column(String, nullable=False)  
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # Links to user who owns this data
     tasks = relationship("Task", back_populates="elderly", cascade="all, delete")
     medications = relationship("Medication", back_populates="elderly", cascade="all, delete")

@@ -10,12 +10,12 @@ class PDFGenerator:
         self.caregiver_name = caregiver_name
         self.current_date = datetime.now().strftime("%Y-%m-%d")
 
-    def add_title(self):
+    def add_title(self, caregiver):
         self.pdf.set_fill_color(220, 220, 220)
         self.pdf.set_text_color(0, 51, 102)
         self.pdf.set_font("Helvetica", style="B", size=16)
 
-        title = f"  {self.caregiver_name}   -   {self.current_date}  "
+        title = f"  {self.caregiver_name} (ID: {caregiver.custom_id})   -   {self.current_date}  "
         self.pdf.cell(180, 15, title, border=1, align='C', fill=True)
         self.pdf.ln(20)
 
@@ -83,9 +83,10 @@ class PDFGenerator:
 
 def generate_caregiver_pdf(caregiver):
     pdf_gen = PDFGenerator(caregiver_name=caregiver.name)
-    pdf_gen.add_title()
+    pdf_gen.add_title(caregiver)  # Pass caregiver object to access custom_id
     pdf_gen.add_table(caregiver)
     pdf_gen.add_footer(caregiver)
 
-    filename = f"caregiver_{caregiver.id}_report.pdf"
+    # Use custom_id for filename (user-friendly ID)
+    filename = f"caregiver_{caregiver.custom_id}_report.pdf"
     return pdf_gen.save_pdf(filename)

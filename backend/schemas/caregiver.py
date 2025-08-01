@@ -4,7 +4,7 @@ from schemas.caregiver_assignment import CaregiverAssignmentResponse
 
 class CaregiverCreate(BaseModel):
     name: str
-    id: int
+    custom_id: int  # User-specified ID (can be same across users)
     bank_name: str
     bank_account: str
     branch_number: str
@@ -22,6 +22,7 @@ class CaregiverUpdateSalary(BaseModel):
 
 class CaregiverResponse(BaseModel):
     id: int
+    custom_id: int  # User-specified ID
     name: str
     bank_name: str
     bank_account: str

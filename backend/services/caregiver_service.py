@@ -19,11 +19,11 @@ def add_caregiver_service(caregiver: CaregiverCreate, user_id: int, db: Session)
         CaregiverResponse: The created caregiver
         
     Raises:
-        HTTPException: If caregiver with same ID already exists for this user
+        HTTPException: If caregiver with same custom_id already exists for this user
     """
-    # Check if caregiver with same ID already exists for THIS USER
+    # Check if caregiver with same custom_id already exists for THIS USER
     existing_caregiver = db.query(Caregiver).filter(
-        Caregiver.id == caregiver.id, 
+        Caregiver.custom_id == caregiver.custom_id, 
         Caregiver.user_id == user_id
     ).first()
     if existing_caregiver:
@@ -31,7 +31,7 @@ def add_caregiver_service(caregiver: CaregiverCreate, user_id: int, db: Session)
 
     # Create and save new caregiver with user_id
     new_caregiver = Caregiver(
-        id=caregiver.id,
+        custom_id=caregiver.custom_id,
         name=caregiver.name,
         bank_name=caregiver.bank_name,
         bank_account=caregiver.bank_account,

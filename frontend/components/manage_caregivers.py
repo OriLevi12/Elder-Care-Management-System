@@ -50,13 +50,13 @@ def manage_caregivers():
 
         for caregiver in caregiver_data:
             
-            expander_label = f"👨‍⚕️ {caregiver['name']} (ID: {caregiver['id']})"
+            expander_label = f"👨‍⚕️ {caregiver['name']} (ID: {caregiver['custom_id']})"
 
             with st.expander(expander_label, expanded=False):
                 col1, col2 = st.columns([8, 2])
                 with col1:
                     st.markdown(f"### 👨‍⚕️ **{caregiver['name']}**")
-                    st.markdown(f"🔢 **ID:** {caregiver['id']}")
+                    st.markdown(f"🔢 **ID:** {caregiver['custom_id']}")
                 with col2:
                     if st.button(f"❌ Delete", key=f"delete_caregiver_{caregiver['id']}"):
                         delete_data(f"caregivers/{caregiver['id']}")

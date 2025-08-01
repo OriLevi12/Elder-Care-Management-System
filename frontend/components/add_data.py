@@ -47,10 +47,10 @@ def add_data_ui():
     if data_type == "👴 Elderly":
         with st.expander("➕ Add Elderly", expanded=True):
             st.markdown("#### 👴 Enter Elderly Details")
-            id = st.number_input("🔢 ID", min_value=1, step=1)
+            custom_id = st.number_input("🔢 ID", min_value=1, step=1)
             name = st.text_input("📝 Name")
             if st.button("➕ Add Elderly", use_container_width=True):
-                payload = {"id": id, "name": name}
+                payload = {"custom_id": custom_id, "name": name}
                 try:
                     add_data("elderly", payload)
                     st.success(f"👴 Elderly {name} added successfully!")
@@ -61,7 +61,7 @@ def add_data_ui():
     elif data_type == "👨‍⚕️ Caregiver":
         with st.expander("➕ Add Caregiver", expanded=True):
             st.markdown("#### 👨‍⚕️ Enter Caregiver Details")
-            id = st.number_input("🔢 ID", min_value=1, step=1)
+            custom_id = st.number_input("🔢 ID", min_value=1, step=1)
             name = st.text_input("📝 Name")
             bank_name = st.text_input("🏦 Bank Name")
             bank_account = st.text_input("🏦 Bank Account")
@@ -69,7 +69,7 @@ def add_data_ui():
 
             if st.button("➕ Add Caregiver", use_container_width=True):
                 payload = {
-                    "id": id,
+                    "custom_id": custom_id,
                     "name": name,
                     "bank_name": bank_name,
                     "bank_account": bank_account,

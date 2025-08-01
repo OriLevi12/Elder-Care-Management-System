@@ -22,18 +22,18 @@ def add_elderly_service(elderly: ElderlyCreate, user_id: int, db: Session) -> El
         ElderlySchema: The created elderly person
         
     Raises:
-        HTTPException: If elderly with same ID already exists
+        HTTPException: If elderly with same custom_id already exists for this user
     """
-    # Check if elderly with same ID already exists for THIS USER
+    # Check if elderly with same custom_id already exists for THIS USER
     existing_elderly = db.query(Elderly).filter(
-        Elderly.id == elderly.id, 
+        Elderly.custom_id == elderly.custom_id, 
         Elderly.user_id == user_id
     ).first()
     if existing_elderly:
         raise HTTPException(status_code=400, detail="Elderly with this ID already exists for this user")
 
     # Create and save new elderly person with user_id
-    new_elderly = Elderly(id=elderly.id, name=elderly.name, user_id=user_id)
+    new_elderly = Elderly(custom_id=elderly.custom_id, name=elderly.name, user_id=user_id)
     db.add(new_elderly)
     db.commit()
     db.refresh(new_elderly)
