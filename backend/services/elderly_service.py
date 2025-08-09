@@ -39,7 +39,6 @@ def add_elderly_service(elderly: ElderlyCreate, user_id: int, db: Session) -> El
     db.refresh(new_elderly)
 
     # Invalidate related caches to ensure data consistency
-    print("🧹 Clearing elderly list cache and specific elderly cache")
     delete_from_cache(f"user_{user_id}_elderly_list")  # Clear user-specific list cache
     delete_from_cache(f"user_{user_id}_elderly_{new_elderly.id}")  # Clear user-specific individual cache
 
@@ -67,7 +66,6 @@ def get_all_elderly_service(user_id: int, db: Session) -> list[ElderlySchema]:
     # Try to get data from Redis cache first
     cached_data = get_from_cache(cache_key)
     if cached_data:
-        print(f"✅ Retrieved elderly list for user {user_id} from Redis cache")
         return [ElderlySchema(**e) for e in cached_data]
 
     # Cache miss - query database with user filter
@@ -75,7 +73,6 @@ def get_all_elderly_service(user_id: int, db: Session) -> list[ElderlySchema]:
     result = [ElderlySchema.from_orm(e) for e in elderly]
     
     # Store result in cache for future requests
-    print(f"📦 Retrieved elderly list for user {user_id} from DB and storing in Redis")
     set_in_cache(cache_key, [e.dict() for e in result], ttl=300)
 
     return result
@@ -106,7 +103,6 @@ def get_elderly_by_id_service(elderly_id: int, user_id: int, db: Session) -> Eld
     # Try to get data from Redis cache first
     cached_data = get_from_cache(cache_key)
     if cached_data:
-        print(f"✅ Retrieved elderly {elderly_id} for user {user_id} from Redis cache")
         return ElderlySchema(**cached_data)
     
     # Cache miss - query database with user filter
@@ -116,7 +112,6 @@ def get_elderly_by_id_service(elderly_id: int, user_id: int, db: Session) -> Eld
     
     # Convert to schema and cache the result
     result = ElderlySchema.from_orm(elderly)
-    print(f"📦 Retrieved elderly {elderly_id} for user {user_id} from DB and storing in Redis")
     set_in_cache(cache_key, result.dict(), ttl=300)
     
     return result
@@ -330,7 +325,6 @@ def get_medications_for_elderly_service(elderly_id: int, user_id: int, db: Sessi
     # Try to get data from Redis cache first
     cached_data = get_from_cache(cache_key)
     if cached_data:
-        print(f"✅ Retrieved medications for elderly {elderly_id} (user {user_id}) from Redis cache")
         return [MedicationResponse(**m) for m in cached_data]
     
     # Cache miss - query database with user filter
@@ -340,8 +334,7 @@ def get_medications_for_elderly_service(elderly_id: int, user_id: int, db: Sessi
     
     # Convert to schema and cache the result
     result = [MedicationResponse.from_orm(m) for m in elderly.medications]
-    print(f"📦 Retrieved medications for elderly {elderly_id} (user {user_id}) from DB and storing in Redis")
-    set_in_cache(cache_key, [m.dict() for m in result], ttl=300)
+    set_in_cache(cache_key, [m.dict() for c in result], ttl=300)
     
     return result
 

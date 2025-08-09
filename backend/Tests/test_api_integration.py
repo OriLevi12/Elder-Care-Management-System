@@ -3,7 +3,6 @@ import os
 
 # Set testing environment BEFORE any other imports
 os.environ["TESTING"] = "true"
-print(f"🔍 TESTING environment variable set to: {os.environ.get('TESTING')}")
 
 from fastapi.testclient import TestClient
 from main import app
@@ -49,12 +48,10 @@ def setup_database():
     # Close all connections to prevent hanging
     engine.dispose()
 
-# Debug test to check if auth_headers fixture works
+# Test to check if auth_headers fixture works
 def test_auth_headers_fixture(auth_headers):
-    print("Auth headers:", auth_headers)
     assert "Authorization" in auth_headers
     assert auth_headers["Authorization"].startswith("Bearer ")
-    print("✅ Auth headers fixture works!")
 
 ### Caregiver Tests ###
 def test_add_caregiver_success(setup_database, auth_headers):

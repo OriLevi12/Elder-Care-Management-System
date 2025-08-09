@@ -62,7 +62,6 @@ def create_assignment_service(assignment: CaregiverAssignmentCreate, user_id: in
     db.refresh(new_assignment)
     
     # Invalidate related caches to ensure data consistency
-    print("🧹 Clearing caregiver and elderly caches due to assignment change")
     delete_from_cache(f"user_{user_id}_caregiver_{assignment.caregiver_id}")  # Clear user-specific caregiver cache
     delete_from_cache(f"user_{user_id}_caregiver_list")  # Clear user-specific caregiver list cache
     delete_from_cache(f"user_{user_id}_elderly_{assignment.elderly_id}")  # Clear user-specific elderly cache
@@ -93,7 +92,6 @@ def get_all_assignments_service(user_id: int, db: Session) -> list[CaregiverAssi
     # Try to get data from Redis cache first
     cached_data = get_from_cache(cache_key)
     if cached_data:
-        print(f"✅ Retrieved caregiver assignments list for user {user_id} from Redis cache")
         return [CaregiverAssignmentResponse(**a) for a in cached_data]
 
     # Cache miss - query database with user filter
@@ -101,7 +99,6 @@ def get_all_assignments_service(user_id: int, db: Session) -> list[CaregiverAssi
     result = [CaregiverAssignmentResponse.from_orm(a) for a in assignments]
     
     # Store result in cache for future requests
-    print(f"📦 Retrieved caregiver assignments list for user {user_id} from DB and storing in Redis")
     set_in_cache(cache_key, [a.dict() for a in result], ttl=300)
 
     return result
@@ -141,7 +138,6 @@ def delete_assignment_service(assignment_id: int, user_id: int, db: Session) -> 
     db.commit()
 
     # Invalidate related caches to ensure data consistency
-    print("🧹 Clearing caregiver and elderly caches due to assignment deletion")
     delete_from_cache(f"user_{user_id}_caregiver_{caregiver_id}")  # Clear user-specific caregiver cache
     delete_from_cache(f"user_{user_id}_caregiver_list")  # Clear user-specific caregiver list cache
     delete_from_cache(f"user_{user_id}_elderly_{elderly_id}")  # Clear user-specific elderly cache

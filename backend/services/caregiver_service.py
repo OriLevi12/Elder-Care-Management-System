@@ -43,7 +43,6 @@ def add_caregiver_service(caregiver: CaregiverCreate, user_id: int, db: Session)
     db.refresh(new_caregiver)
 
     # Invalidate related caches to ensure data consistency
-    print("🧹 Clearing caregiver list cache and specific caregiver cache")
     delete_from_cache(f"user_{user_id}_caregiver_list")  # Clear user-specific list cache
     delete_from_cache(f"user_{user_id}_caregiver_{new_caregiver.id}")  # Clear user-specific individual cache
 
@@ -71,7 +70,6 @@ def get_all_caregivers_service(user_id: int, db: Session) -> list[CaregiverRespo
     # Try to get data from Redis cache first
     cached_data = get_from_cache(cache_key)
     if cached_data:
-        print(f"✅ Retrieved caregiver list for user {user_id} from Redis cache")
         return [CaregiverResponse(**c) for c in cached_data]
 
     # Cache miss - query database with user filter
@@ -79,7 +77,6 @@ def get_all_caregivers_service(user_id: int, db: Session) -> list[CaregiverRespo
     result = [CaregiverResponse.from_orm(c) for c in caregivers]
     
     # Store result in cache for future requests
-    print(f"📦 Retrieved caregiver list for user {user_id} from DB and storing in Redis")
     set_in_cache(cache_key, [c.dict() for c in result], ttl=300)
 
     return result
@@ -110,7 +107,6 @@ def get_caregiver_by_id_service(caregiver_id: int, user_id: int, db: Session) ->
     # Try to get data from Redis cache first
     cached_data = get_from_cache(cache_key)
     if cached_data:
-        print(f"✅ Retrieved caregiver {caregiver_id} for user {user_id} from Redis cache")
         return CaregiverResponse(**cached_data)
     
     # Cache miss - query database with user filter
@@ -120,7 +116,6 @@ def get_caregiver_by_id_service(caregiver_id: int, user_id: int, db: Session) ->
     
     # Convert to schema and cache the result
     result = CaregiverResponse.from_orm(caregiver)
-    print(f"📦 Retrieved caregiver {caregiver_id} for user {user_id} from DB and storing in Redis")
     set_in_cache(cache_key, result.dict(), ttl=300)
     
     return result
