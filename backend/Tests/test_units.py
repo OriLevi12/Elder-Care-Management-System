@@ -6,24 +6,28 @@ from models.task import Task
 # Test for the Caregiver model
 def test_create_caregiver():
     caregiver = Caregiver(
-        id=1,
+        custom_id=1,
         name="John Doe",
         bank_name="Bank A",
         bank_account="12345678",
         branch_number="001",
+        user_id=1
     )
     assert caregiver.name == "John Doe"
     assert caregiver.bank_name == "Bank A"
     assert caregiver.bank_account == "12345678"
     assert caregiver.branch_number == "001"
+    assert caregiver.custom_id == 1
+    assert caregiver.user_id == 1
 
 def test_update_caregiver_salary():
     caregiver = Caregiver(
-        id=1,
+        custom_id=1,
         name="John Doe",
         bank_name="Bank A",
         bank_account="12345678",
         branch_number="001",
+        user_id=1,
         salary={"price": 0, "amount": 0, "total": 0},
         saturday={"price": 0, "amount": 0, "total": 0},
         allowance={"price": 0, "amount": 0, "total": 0},
@@ -41,12 +45,13 @@ def test_update_caregiver_salary():
 
 # Test for the Elderly model
 def test_create_elderly():
-    elderly = Elderly(id=1, name="Alice")
-    assert elderly.id == 1
+    elderly = Elderly(custom_id=1, name="Alice", user_id=1)
+    assert elderly.custom_id == 1
     assert elderly.name == "Alice"
+    assert elderly.user_id == 1
 
 def test_add_task_to_elderly():
-    elderly = Elderly(id=1, name="Alice")
+    elderly = Elderly(custom_id=1, name="Alice", user_id=1)
     task = Task(id=1, description="Take medicine", status="pending")
     elderly.tasks.append(task)
 
