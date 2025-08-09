@@ -334,7 +334,7 @@ def get_medications_for_elderly_service(elderly_id: int, user_id: int, db: Sessi
     
     # Convert to schema and cache the result
     result = [MedicationResponse.from_orm(m) for m in elderly.medications]
-    set_in_cache(cache_key, [m.dict() for c in result], ttl=300)
+    set_in_cache(cache_key, [m.dict() for m in result], ttl=300)
     
     return result
 
