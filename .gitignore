@@ -1,4 +1,8 @@
+# backend
 backend/venv/
 __pycache__/
 .env
 test.db
+
+# React Frontend
+react-frontend/node_modules/
