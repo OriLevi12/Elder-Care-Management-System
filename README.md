@@ -3,6 +3,15 @@
 
 The Elder Care Management System is an innovative and user-friendly platform designed to enhance the quality of life for elderly individuals while simplifying care management for families, guardians, caregivers, and elder care facilities.
 
+## 🎨 Application Design
+
+### Modern Frontend (React)
+![React application design](react-frontend/src/media/ApplicationDesign.png)
+
+### Legacy Frontend (Streamlit)
+![application design](frontend/media/ApplicationDesign.png)
+
+
 ## ✨ Features
 1. 🛠️ Manage caregivers, elderly individuals, tasks, and medications.
 2. 📝 Generate a PDF payment report for caregivers.
@@ -72,7 +81,8 @@ Elder-Care/
 │   │   │── manage_caregivers.py
 │   │   │── manage_elderly.py
 │   │   │── view_data.py
-│   │
+│   │── media/            # Media assets and images
+│   │   │── ApplicationDesign.png  # Streamlit application design
 │   │── Dockerfile         # Frontend containerization
 │   │── api_client.py      # Handles API communication
 │   │── requirements.txt   # Frontend dependencies
@@ -83,6 +93,8 @@ Elder-Care/
 │   │   │── components/    # React components
 │   │   │   │── Header.js  # Responsive navigation header with mobile menu
 │   │   │   │── CaregiverDashboard.js  # Caregiver dashboard page
+│   │   │── media/         # Media assets and images
+│   │   │   │── ApplicationDesign.png  # React application design
 │   │   │── App.js         # Main App component with React Router
 │   │   │── App.css        # App styles
 │   │   │── App.test.js    # App tests
@@ -323,6 +335,3 @@ Tests/test_units.py::test_update_task_status PASSED
 **Ori Levi**  
 📧 Email: Leviori1218@gmail.com  
 🐙 GitHub: [OriLevi12](https://github.com/OriLevi12)
-
-## illustration
-![application design](frontend/media/ApplicationDesign.png)
