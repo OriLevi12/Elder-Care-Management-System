@@ -1,24 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/header';
+import CaregiverDashboard from './components/CaregiverDashboard';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <Routes>
+          <Route path="/" element={
+            <main className="container mx-auto px-6 py-8">
+              <h1 className="text-3xl font-bold text-gray-800 mb-6">
+                Welcome to Elder Care Manager
+              </h1>
+              <p className="text-lg text-gray-600">
+                Manage your caregivers, elderly clients, and tasks efficiently.
+              </p>
+            </main>
+          } />
+          <Route path="/caregiver-dashboard" element={<CaregiverDashboard />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
