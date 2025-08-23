@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/header';
-import CaregiverDashboard from './components/CaregiverDashboard';
+import CaregiversDashboard from './components/CaregiversDashboard';
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
               </p>
             </main>
           } />
-          <Route path="/caregiver-dashboard" element={<CaregiverDashboard />} />
+          <Route path="/caregiver-dashboard" element={<CaregiversDashboard />} />
         </Routes>
       </div>
     </Router>
