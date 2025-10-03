@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService } from '../services/authService';
+import { STORAGE_KEYS } from '../utils/constants';
 
 const AuthContext = createContext();
 
@@ -13,12 +14,12 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem(STORAGE_KEYS.TOKEN));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const initAuth = async () => {
-      const storedToken = localStorage.getItem('token');
+      const storedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
       if (storedToken) {
         try {
           const userData = await authService.getCurrentUser(storedToken);
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }) => {
           setToken(storedToken);
         } catch (error) {
           console.error('Failed to validate token:', error);
-          localStorage.removeItem('token');
+          localStorage.removeItem(STORAGE_KEYS.TOKEN);
           setToken(null);
         }
       }
@@ -41,7 +42,7 @@ export const AuthProvider = ({ children }) => {
       const response = await authService.login(email, password);
       const { access_token, ...userData } = response;
       
-      localStorage.setItem('token', access_token);
+      localStorage.setItem(STORAGE_KEYS.TOKEN, access_token);
       setToken(access_token);
       setUser(userData);
       
@@ -69,7 +70,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem(STORAGE_KEYS.TOKEN);
     setToken(null);
     setUser(null);
   };

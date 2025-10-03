@@ -5,7 +5,7 @@ import Header from './components/header';
 import CaregiversDashboard from './components/CaregiversDashboard';
 import Login from './components/Login';
 import Register from './components/Register';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './guards/ProtectedRoute';
 
 function App() {
   return (

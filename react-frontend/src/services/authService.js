@@ -1,9 +1,9 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+import { API_BASE_URL, API_ENDPOINTS, STORAGE_KEYS } from '../utils/constants';
 
 class AuthService {
   async login(email, password) {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.LOGIN}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ class AuthService {
 
   async register(email, password, fullName) {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.REGISTER}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ class AuthService {
   }
 
   async getCurrentUser(token) {
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.ME}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -67,7 +67,7 @@ class AuthService {
 
   // Helper method to make authenticated requests
   async makeAuthenticatedRequest(url, options = {}) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
     
     const defaultOptions = {
       headers: {
@@ -85,7 +85,7 @@ class AuthService {
     if (!response.ok) {
       if (response.status === 401) {
         // Token expired or invalid
-        localStorage.removeItem('token');
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
         window.location.href = '/login';
         throw new Error('Authentication required');
       }
