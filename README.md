@@ -171,7 +171,7 @@ Elder-Care/
 
 ## 🎥 Demo Video
 
-[![Watch the video](https://img.youtube.com/vi/5YUIZpneDnw/hqdefault.jpg)](https://youtu.be/5YUIZpneDnw)
+[![Watch the video](https://img.youtube.com/vi/5YUIZpneDnw/hqdefault.jpg)](https://youtu.be/DflPAanSCOI)
 
 ## 🚀 Installation
 
