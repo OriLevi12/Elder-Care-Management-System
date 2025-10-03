@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from db.database import Base, engine
 from routes import caregivers, elderly, caregiver_assignments, auth
 from dotenv import load_dotenv
@@ -12,6 +13,15 @@ app = FastAPI(
     title="Elder Care Management System",
     description="A system for managing caregivers, medications, tasks, and daily operations for elderly individuals.",
     version="1.0.0"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # React dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(caregivers.router, prefix="/caregivers", tags=["caregivers"])
