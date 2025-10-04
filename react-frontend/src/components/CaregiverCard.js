@@ -3,9 +3,15 @@ import { formatCurrency, getInitials } from '../utils/formatters';
 
 /**
  * Individual caregiver row component
+ * Updated to work with backend data structure
  */
 const CaregiverCard = ({ caregiver }) => {
-  const totalSalary = caregiver.baseSalary + caregiver.totalAllowance + caregiver.totalSaturdayPay;
+  // Map backend data structure to display format
+  const baseSalary = caregiver.salary?.price || 0;
+  const totalAllowance = caregiver.allowance?.price || 0;
+  const totalSaturdayPay = caregiver.saturday?.price || 0;
+  const totalSalary = baseSalary + totalAllowance + totalSaturdayPay;
+  const assignedElderly = caregiver.assignments?.length || 0;
 
   return (
     <tr className="hover:bg-gray-50">
@@ -27,28 +33,28 @@ const CaregiverCard = ({ caregiver }) => {
       {/* ID Column */}
       <td className="px-6 py-4">
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-          {caregiver.id}
+          {caregiver.custom_id || caregiver.id}
         </span>
       </td>
       
       {/* Base Salary Column */}
       <td className="px-6 py-4">
         <span className="text-sm text-green-600 font-medium">
-          {formatCurrency(caregiver.baseSalary)}
+          {formatCurrency(baseSalary)}
         </span>
       </td>
       
       {/* Total Allowance Column */}
       <td className="px-6 py-4">
         <span className="text-sm text-orange-600 font-medium">
-          {formatCurrency(caregiver.totalAllowance)}
+          {formatCurrency(totalAllowance)}
         </span>
       </td>
       
       {/* Total Saturday Pay Column */}
       <td className="px-6 py-4">
         <span className="text-sm text-purple-600 font-medium">
-          {formatCurrency(caregiver.totalSaturdayPay)}
+          {formatCurrency(totalSaturdayPay)}
         </span>
       </td>
       
@@ -66,7 +72,7 @@ const CaregiverCard = ({ caregiver }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
           </svg>
-          View ({caregiver.assignedElderly})
+          View ({assignedElderly})
         </button>
       </td>
       
