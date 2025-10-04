@@ -97,14 +97,16 @@ Elder-Care/
 │   │   │   │── Header.js  # Responsive navigation header with auth status
 │   │   │   │── Login.js   # User login form with validation
 │   │   │   │── Register.js # User registration form with validation
-│   │   │   │── CaregiverDashboard.js  # Caregiver dashboard page
-│   │   │   │── CaregiverCard.js # Individual caregiver card component
+│   │   │   │── CaregiversDashboard.js  # Caregiver dashboard page (API integrated)
+│   │   │   │── CaregiverCard.js # Individual caregiver card component (API integrated)
 │   │   │   │── CaregiverTable.js # Caregiver data table component
 │   │   │   │── DashboardHeader.js # Dashboard header component
+│   │   │   │── AddCaregiverModal.js # Modal for adding new caregivers (NEW)
 │   │   │── contexts/      # React Context for state management
 │   │   │   │── AuthContext.js # Global authentication state management
 │   │   │── services/       # API communication layer
 │   │   │   │── authService.js # Authentication API calls
+│   │   │   │── caregiverService.js # Caregiver CRUD operations (NEW)
 │   │   │── guards/         # Route protection components
 │   │   │   │── ProtectedRoute.js # Route guard for authentication
 │   │   │── utils/          # Utility functions and constants

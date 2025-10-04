@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardHeader from './DashboardHeader';
 import CaregiverTable from './CaregiverTable';
+import AddCaregiverModal from './AddCaregiverModal';
 import { caregiverService } from '../services/caregiverService';
 
 /**
@@ -11,24 +12,29 @@ function CaregiversDashboard() {
   const [caregivers, setCaregivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const fetchCaregivers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await caregiverService.getCaregivers();
+      setCaregivers(data);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch caregivers');
+      console.error('Error fetching caregivers:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCaregivers = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await caregiverService.getCaregivers();
-        setCaregivers(data);
-      } catch (err) {
-        setError(err.message || 'Failed to fetch caregivers');
-        console.error('Error fetching caregivers:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCaregivers();
   }, []);
+
+  const handleCaregiverAdded = () => {
+    fetchCaregivers(); // Refresh the list after adding
+  };
 
   if (loading) {
     return (
@@ -55,7 +61,28 @@ function CaregiversDashboard() {
   return (
     <div className="container mx-auto p-6 max-w-6xl">
       <DashboardHeader />
+      
+      {/* Add Caregiver Button */}
+      <div className="mb-6">
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center font-medium"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add New Caregiver
+        </button>
+      </div>
+
       <CaregiverTable caregivers={caregivers} />
+      
+      {/* Add Caregiver Modal */}
+      <AddCaregiverModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onCaregiverAdded={handleCaregiverAdded}
+      />
     </div>
   );
 }
