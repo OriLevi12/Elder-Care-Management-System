@@ -36,6 +36,40 @@ function CaregiversDashboard() {
     fetchCaregivers(); // Refresh the list after adding
   };
 
+  const handleDeleteCaregiver = async (caregiverId) => {
+    try {
+      await caregiverService.deleteCaregiver(caregiverId);
+      // Refresh the list after successful deletion
+      fetchCaregivers();
+    } catch (err) {
+      console.error('Error deleting caregiver:', err);
+      setError(err.message || 'Failed to delete caregiver');
+    }
+  };
+
+  const handleGeneratePDF = async (caregiverId) => {
+    try {
+      const pdfBlob = await caregiverService.generateCaregiverPDF(caregiverId);
+      
+      // Find the caregiver to get their name for the filename
+      const caregiver = caregivers.find(c => c.id === caregiverId);
+      const caregiverName = caregiver ? caregiver.name.replace(/\s+/g, '-') : caregiverId;
+      
+      // Create download link for PDF blob
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${caregiverName}-report.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      setError(err.message || 'Failed to generate PDF report');
+    }
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
@@ -75,7 +109,7 @@ function CaregiversDashboard() {
         </button>
       </div>
 
-      <CaregiverTable caregivers={caregivers} />
+      <CaregiverTable caregivers={caregivers} onDelete={handleDeleteCaregiver} onGeneratePDF={handleGeneratePDF} />
       
       {/* Add Caregiver Modal */}
       <AddCaregiverModal

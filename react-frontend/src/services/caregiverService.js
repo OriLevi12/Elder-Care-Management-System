@@ -61,10 +61,25 @@ class CaregiverService {
    * @returns {Promise<Blob>} PDF file blob
    */
   async generateCaregiverPDF(id) {
-    const response = await authService.makeAuthenticatedRequest(`/caregivers/${id}/generate-pdf`, {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/caregivers/${id}/generate-pdf`, {
       method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/pdf',
+      },
     });
-    return response; // This will be a file/blob
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication required');
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.blob();
   }
 }
 
