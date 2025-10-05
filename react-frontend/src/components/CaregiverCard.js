@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { formatCurrency, getInitials } from '../utils/formatters';
+import UpdateSalaryModal from './UpdateSalaryModal';
 
 /**
  * Individual caregiver row component
  * Updated to work with backend data structure
  */
-const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF }) => {
+const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF, onUpdateSalary }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [showUpdateSalaryModal, setShowUpdateSalaryModal] = useState(false);
   
   // Map backend data structure to display format
   const baseSalary = caregiver.salary?.price || 0;
@@ -38,6 +40,14 @@ const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF }) => {
     } finally {
       setIsGeneratingPDF(false);
     }
+  };
+
+  const handleUpdateSalaryClick = () => {
+    setShowUpdateSalaryModal(true);
+  };
+
+  const handleCloseUpdateSalaryModal = () => {
+    setShowUpdateSalaryModal(false);
   };
 
   return (
@@ -123,7 +133,11 @@ const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF }) => {
               </svg>
             )}
           </button>
-          <button className="p-2 text-green-600 hover:bg-green-100 rounded-md border border-gray-300 hover:border-green-300">
+          <button 
+            onClick={handleUpdateSalaryClick}
+            className="p-2 text-green-600 hover:bg-green-100 rounded-md border border-gray-300 hover:border-green-300"
+            title="Update salary"
+          >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
@@ -175,6 +189,16 @@ const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF }) => {
           </div>
         </div>
       </div>
+    )}
+    
+    {/* Update Salary Modal */}
+    {showUpdateSalaryModal && (
+      <UpdateSalaryModal
+        caregiver={caregiver}
+        isOpen={showUpdateSalaryModal}
+        onClose={handleCloseUpdateSalaryModal}
+        onSalaryUpdated={onUpdateSalary}
+      />
     )}
     </>
   );

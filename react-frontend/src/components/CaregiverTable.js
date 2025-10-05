@@ -4,7 +4,7 @@ import CaregiverCard from './CaregiverCard';
 /**
  * Table component for displaying caregivers data
  */
-const CaregiverTable = ({ caregivers, onDelete, onGeneratePDF }) => {
+const CaregiverTable = ({ caregivers, onDelete, onGeneratePDF, onUpdateSalary }) => {
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
@@ -27,7 +27,7 @@ const CaregiverTable = ({ caregivers, onDelete, onGeneratePDF }) => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {caregivers.map((caregiver) => (
-              <CaregiverCard key={caregiver.id} caregiver={caregiver} onDelete={onDelete} onGeneratePDF={onGeneratePDF} />
+              <CaregiverCard key={caregiver.id} caregiver={caregiver} onDelete={onDelete} onGeneratePDF={onGeneratePDF} onUpdateSalary={onUpdateSalary} />
             ))}
           </tbody>
         </table>

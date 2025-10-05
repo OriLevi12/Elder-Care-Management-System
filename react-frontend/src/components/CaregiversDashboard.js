@@ -19,7 +19,9 @@ function CaregiversDashboard() {
       setLoading(true);
       setError(null);
       const data = await caregiverService.getCaregivers();
-      setCaregivers(data);
+      // Sort caregivers by ID to maintain consistent order
+      const sortedData = data.sort((a, b) => a.id - b.id);
+      setCaregivers(sortedData);
     } catch (err) {
       setError(err.message || 'Failed to fetch caregivers');
       console.error('Error fetching caregivers:', err);
@@ -70,6 +72,11 @@ function CaregiversDashboard() {
     }
   };
 
+  const handleUpdateSalary = async () => {
+    // Refresh the caregiver list after salary update
+    fetchCaregivers();
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
@@ -109,7 +116,7 @@ function CaregiversDashboard() {
         </button>
       </div>
 
-      <CaregiverTable caregivers={caregivers} onDelete={handleDeleteCaregiver} onGeneratePDF={handleGeneratePDF} />
+      <CaregiverTable caregivers={caregivers} onDelete={handleDeleteCaregiver} onGeneratePDF={handleGeneratePDF} onUpdateSalary={handleUpdateSalary} />
       
       {/* Add Caregiver Modal */}
       <AddCaregiverModal
