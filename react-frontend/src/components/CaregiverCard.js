@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { formatCurrency, getInitials } from '../utils/formatters';
 import UpdateSalaryModal from './UpdateSalaryModal';
+import AssignmentModal from './AssignmentModal';
+import AssignmentManageModal from './AssignmentManageModal';
 
 /**
  * Individual caregiver row component
  * Updated to work with backend data structure
  */
-const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF, onUpdateSalary }) => {
+const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF, onUpdateSalary, onAssignmentChanged }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [showUpdateSalaryModal, setShowUpdateSalaryModal] = useState(false);
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
+  const [showManageModal, setShowManageModal] = useState(false);
   
   // Map backend data structure to display format
   const baseSalary = caregiver.salary?.price || 0;
@@ -48,6 +52,28 @@ const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF, onUpdateSalary }) =
 
   const handleCloseUpdateSalaryModal = () => {
     setShowUpdateSalaryModal(false);
+  };
+
+  const handleViewAssignments = () => {
+    setShowAssignmentModal(true);
+  };
+
+  const handleCloseAssignmentModal = () => {
+    setShowAssignmentModal(false);
+  };
+
+  const handleManageAssignments = () => {
+    setShowManageModal(true);
+  };
+
+  const handleCloseManageModal = () => {
+    setShowManageModal(false);
+  };
+
+  const handleAssignmentChanged = () => {
+    if (onAssignmentChanged) {
+      onAssignmentChanged();
+    }
   };
 
   return (
@@ -105,13 +131,27 @@ const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF, onUpdateSalary }) =
       
       {/* Assigned Elderly Column */}
       <td className="px-6 py-4">
-        <button className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          View ({assignedElderly})
-        </button>
+        <div className="flex space-x-2">
+          <button 
+            onClick={handleViewAssignments}
+            className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          >
+            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            View ({assignedElderly})
+          </button>
+          <button 
+            onClick={handleManageAssignments}
+            className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-purple-700 bg-purple-100 hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+            title="Manage assignments"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </button>
+        </div>
       </td>
       
       {/* Actions Column */}
@@ -198,6 +238,28 @@ const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF, onUpdateSalary }) =
         isOpen={showUpdateSalaryModal}
         onClose={handleCloseUpdateSalaryModal}
         onSalaryUpdated={onUpdateSalary}
+      />
+    )}
+    
+    {/* Assignment Modal */}
+    {showAssignmentModal && (
+      <AssignmentModal
+        isOpen={showAssignmentModal}
+        onClose={handleCloseAssignmentModal}
+        caregiverId={caregiver.id}
+        caregiverName={caregiver.name}
+        onAssignmentChanged={handleAssignmentChanged}
+      />
+    )}
+    
+    {/* Assignment Manage Modal */}
+    {showManageModal && (
+      <AssignmentManageModal
+        isOpen={showManageModal}
+        onClose={handleCloseManageModal}
+        caregiverId={caregiver.id}
+        caregiverName={caregiver.name}
+        onAssignmentChanged={handleAssignmentChanged}
       />
     )}
     </>

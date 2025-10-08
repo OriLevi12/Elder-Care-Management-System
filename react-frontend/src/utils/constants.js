@@ -26,6 +26,13 @@ export const API_ENDPOINTS = {
     ME: '/auth/me',
   },
   CAREGIVERS: '/caregivers',
+  CAREGIVER_BY_ID: (id) => `/caregivers/${id}`,
+  CAREGIVER_UPDATE_SALARY: (id) => `/caregivers/${id}/update-salary`,
+  CAREGIVER_GENERATE_PDF: (id) => `/caregivers/${id}/generate-pdf`,
+  CAREGIVER_DELETE: (id) => `/caregivers/${id}`,
   ELDERLY: '/elderly',
+  ELDERLY_BY_ID: (id) => `/elderly/${id}`,
+  ELDERLY_DELETE: (id) => `/elderly/${id}`,
   CAREGIVER_ASSIGNMENTS: '/caregiver-assignments',
+  CAREGIVER_ASSIGNMENT_DELETE: (id) => `/caregiver-assignments/${id}`,
 };

@@ -77,6 +77,11 @@ function CaregiversDashboard() {
     fetchCaregivers();
   };
 
+  const handleAssignmentChanged = () => {
+    // Refresh the caregiver list after assignment changes
+    fetchCaregivers();
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
@@ -116,7 +121,7 @@ function CaregiversDashboard() {
         </button>
       </div>
 
-      <CaregiverTable caregivers={caregivers} onDelete={handleDeleteCaregiver} onGeneratePDF={handleGeneratePDF} onUpdateSalary={handleUpdateSalary} />
+      <CaregiverTable caregivers={caregivers} onDelete={handleDeleteCaregiver} onGeneratePDF={handleGeneratePDF} onUpdateSalary={handleUpdateSalary} onAssignmentChanged={handleAssignmentChanged} />
       
       {/* Add Caregiver Modal */}
       <AddCaregiverModal

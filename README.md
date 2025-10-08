@@ -96,6 +96,8 @@ Elder-Care/
 │   │── src/
 │   │   │── components/     # UI components
 │   │   │   │── AddCaregiverModal.js
+│   │   │   │── AssignmentModal.js
+│   │   │   │── AssignmentManageModal.js
 │   │   │   │── CaregiverCard.js
 │   │   │   │── CaregiversDashboard.js
 │   │   │   │── CaregiverTable.js
@@ -107,6 +109,7 @@ Elder-Care/
 │   │   │── contexts/       # State management
 │   │   │   │── AuthContext.js
 │   │   │── services/       # API communication
+│   │   │   │── assignmentService.js
 │   │   │   │── authService.js
 │   │   │   │── caregiverService.js
 │   │   │── guards/         # Route protection
