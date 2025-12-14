@@ -40,6 +40,23 @@ services:
     depends_on:
       - backend
 
+  react-frontend:
+    build:
+      context: ./react-frontend
+    container_name: eldercare_react_frontend
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./react-frontend:/react-frontend
+      - /react-frontend/node_modules
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
+
 volumes:
   pgdata:
 
