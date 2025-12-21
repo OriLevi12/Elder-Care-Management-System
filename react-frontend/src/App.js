@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/header';
 import CaregiversDashboard from './components/CaregiversDashboard';
+import ElderlyDashboard from './components/ElderlyDashboard';
 import Login from './components/Login';
 import Register from './components/Register';
 import ProtectedRoute from './guards/ProtectedRoute';
@@ -36,6 +37,13 @@ function App() {
               <ProtectedRoute>
                 <Header />
                 <CaregiversDashboard />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/elder-dashboard" element={
+              <ProtectedRoute>
+                <Header />
+                <ElderlyDashboard />
               </ProtectedRoute>
             } />
             
