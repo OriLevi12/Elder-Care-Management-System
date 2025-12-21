@@ -114,6 +114,77 @@ class AssignmentService {
   }
 
   /**
+   * Get caregiver by ID
+   * @param {number} caregiverId - The ID of the caregiver
+   * @returns {Promise<Object>} Caregiver object
+   */
+  async getCaregiverById(caregiverId) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CAREGIVER_BY_ID(caregiverId)}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem(STORAGE_KEYS.TOKEN);
+          window.location.href = '/login';
+          throw new Error('Authentication required');
+        }
+        if (response.status === 404) {
+          throw new Error('Caregiver not found');
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Unable to connect to server. Please check if the backend is running.');
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Get caregivers assigned to a specific elderly person
+   * @param {number} elderlyId - The ID of the elderly person
+   * @returns {Promise<Array>} Array of caregiver objects assigned to the elderly person
+   */
+  async getCaregiversForElderly(elderlyId) {
+    try {
+      // Get all assignments
+      const assignments = await this.getAssignments();
+      
+      // Filter assignments for the specific elderly person
+      const elderlyAssignments = assignments.filter(
+        assignment => assignment.elderly_id === elderlyId
+      );
+      
+      // Extract caregiver IDs
+      const caregiverIds = elderlyAssignments.map(assignment => assignment.caregiver_id);
+      
+      // Get caregiver details for each ID
+      const caregiverPromises = caregiverIds.map(caregiverId => this.getCaregiverById(caregiverId));
+      const caregiverList = await Promise.all(caregiverPromises);
+      
+      return caregiverList;
+    } catch (error) {
+      console.error('Error getting caregivers for elderly:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Create a new caregiver-elderly assignment
    * @param {number} caregiverId - The ID of the caregiver
    * @param {number} elderlyId - The ID of the elderly person
