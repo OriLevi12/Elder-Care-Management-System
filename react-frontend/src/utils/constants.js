@@ -33,6 +33,8 @@ export const API_ENDPOINTS = {
   ELDERLY: '/elderly',
   ELDERLY_BY_ID: (id) => `/elderly/${id}`,
   ELDERLY_DELETE: (id) => `/elderly/${id}`,
+  ELDERLY_ADD_TASK: (id) => `/elderly/${id}/tasks`,
+  ELDERLY_ADD_MEDICATION: (id) => `/elderly/${id}/medications`,
   CAREGIVER_ASSIGNMENTS: '/caregiver-assignments',
   CAREGIVER_ASSIGNMENT_DELETE: (id) => `/caregiver-assignments/${id}`,
 };

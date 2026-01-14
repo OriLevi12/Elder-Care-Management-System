@@ -41,6 +41,32 @@ class ElderlyService {
       method: 'DELETE',
     });
   }
+
+  /**
+   * Add a task to an elderly person
+   * @param {number} elderlyId - Elderly ID
+   * @param {Object} taskData - Task data (description, status)
+   * @returns {Promise<Object>} Created task data
+   */
+  async addTask(elderlyId, taskData) {
+    return await authService.makeAuthenticatedRequest(API_ENDPOINTS.ELDERLY_ADD_TASK(elderlyId), {
+      method: 'POST',
+      body: JSON.stringify(taskData),
+    });
+  }
+
+  /**
+   * Add a medication to an elderly person
+   * @param {number} elderlyId - Elderly ID
+   * @param {Object} medicationData - Medication data (name, dosage, frequency)
+   * @returns {Promise<Object>} Created medication data
+   */
+  async addMedication(elderlyId, medicationData) {
+    return await authService.makeAuthenticatedRequest(API_ENDPOINTS.ELDERLY_ADD_MEDICATION(elderlyId), {
+      method: 'POST',
+      body: JSON.stringify(medicationData),
+    });
+  }
 }
 
 export const elderlyService = new ElderlyService();

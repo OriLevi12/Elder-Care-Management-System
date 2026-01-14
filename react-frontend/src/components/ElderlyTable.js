@@ -4,7 +4,7 @@ import ElderlyCard from './ElderlyCard';
 /**
  * Table component for displaying elderly data
  */
-const ElderlyTable = ({ elderly, onDelete }) => {
+const ElderlyTable = ({ elderly, onDelete, onTaskAdded, onMedicationAdded }) => {
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
@@ -29,6 +29,8 @@ const ElderlyTable = ({ elderly, onDelete }) => {
                 key={elderlyPerson.id} 
                 elderly={elderlyPerson} 
                 onDelete={onDelete}
+                onTaskAdded={onTaskAdded}
+                onMedicationAdded={onMedicationAdded}
               />
             ))}
           </tbody>

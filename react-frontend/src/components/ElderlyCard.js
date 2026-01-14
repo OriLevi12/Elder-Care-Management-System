@@ -2,16 +2,26 @@ import React, { useState } from 'react';
 import { getInitials } from '../utils/formatters';
 import AssignmentModal from './AssignmentModal';
 import AssignmentManageModal from './AssignmentManageModal';
+import AssignCaregiverModal from './AssignCaregiverModal';
 import DeleteElderlyModal from './DeleteElderlyModal';
+import AddTaskModal from './AddTaskModal';
+import ViewTasksModal from './ViewTasksModal';
+import AddMedicationModal from './AddMedicationModal';
+import ViewMedicationsModal from './ViewMedicationsModal';
+import ViewCaregiversModal from './ViewCaregiversModal';
 
 /**
  * Individual elderly row component
  * Updated to work with backend data structure
  */
-const ElderlyCard = ({ elderly, onDelete }) => {
+const ElderlyCard = ({ elderly, onDelete, onTaskAdded, onMedicationAdded }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
   const [showManageModal, setShowManageModal] = useState(false);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [showViewTasksModal, setShowViewTasksModal] = useState(false);
+  const [showMedicationModal, setShowMedicationModal] = useState(false);
+  const [showViewMedicationsModal, setShowViewMedicationsModal] = useState(false);
+  const [showViewCaregiversModal, setShowViewCaregiversModal] = useState(false);
   
   // Map backend data structure to display format
   const assignedCaregivers = elderly.assignments?.length || 0;
@@ -32,12 +42,9 @@ const ElderlyCard = ({ elderly, onDelete }) => {
   };
 
   const handleViewAssignments = () => {
-    setShowAssignmentModal(true);
+    setShowViewCaregiversModal(true);
   };
 
-  const handleCloseAssignmentModal = () => {
-    setShowAssignmentModal(false);
-  };
 
   const handleManageAssignments = () => {
     setShowManageModal(true);
@@ -49,7 +56,55 @@ const ElderlyCard = ({ elderly, onDelete }) => {
 
   const handleAssignmentChanged = () => {
     // This will trigger a refresh in the parent component
-    // We'll need to pass a callback from ElderlyDashboard
+    if (onTaskAdded) {
+      onTaskAdded(); // Reuse the refresh callback
+    }
+  };
+
+  const handleAddTask = () => {
+    setShowTaskModal(true);
+  };
+
+  const handleCloseTaskModal = () => {
+    setShowTaskModal(false);
+  };
+
+  const handleTaskAdded = () => {
+    if (onTaskAdded) {
+      onTaskAdded();
+    }
+    setShowTaskModal(false);
+  };
+
+  const handleViewTasks = () => {
+    setShowViewTasksModal(true);
+  };
+
+  const handleCloseViewTasksModal = () => {
+    setShowViewTasksModal(false);
+  };
+
+  const handleAddMedication = () => {
+    setShowMedicationModal(true);
+  };
+
+  const handleCloseMedicationModal = () => {
+    setShowMedicationModal(false);
+  };
+
+  const handleMedicationAdded = () => {
+    if (onMedicationAdded) {
+      onMedicationAdded();
+    }
+    setShowMedicationModal(false);
+  };
+
+  const handleViewMedications = () => {
+    setShowViewMedicationsModal(true);
+  };
+
+  const handleCloseViewMedicationsModal = () => {
+    setShowViewMedicationsModal(false);
   };
 
   return (
@@ -104,16 +159,52 @@ const ElderlyCard = ({ elderly, onDelete }) => {
       
       {/* Tasks Column */}
       <td className="px-6 py-4">
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-          {tasksCount} {tasksCount === 1 ? 'Task' : 'Tasks'}
-        </span>
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={handleViewTasks}
+            className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+          >
+            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            View ({tasksCount})
+          </button>
+          <button 
+            onClick={handleAddTask}
+            className="inline-flex items-center px-2 py-1 border border-transparent text-sm font-medium rounded-md text-orange-700 bg-orange-100 hover:bg-orange-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+            title="Add task"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
       </td>
       
       {/* Medications Column */}
       <td className="px-6 py-4">
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-          {medicationsCount} {medicationsCount === 1 ? 'Medication' : 'Medications'}
-        </span>
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={handleViewMedications}
+            className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+          >
+            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            View ({medicationsCount})
+          </button>
+          <button 
+            onClick={handleAddMedication}
+            className="inline-flex items-center px-2 py-1 border border-transparent text-sm font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+            title="Add medication"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
       </td>
       
       {/* Actions Column */}
@@ -140,27 +231,58 @@ const ElderlyCard = ({ elderly, onDelete }) => {
       elderlyName={elderly.name}
     />
     
-    {/* Assignment Modal */}
-    {showAssignmentModal && (
-      <AssignmentModal
-        isOpen={showAssignmentModal}
-        onClose={handleCloseAssignmentModal}
-        elderlyId={elderly.id}
-        elderlyName={elderly.name}
-        onAssignmentChanged={handleAssignmentChanged}
-      />
-    )}
+    {/* View Caregivers Modal */}
+    <ViewCaregiversModal
+      isOpen={showViewCaregiversModal}
+      onClose={() => setShowViewCaregiversModal(false)}
+      elderlyId={elderly.id}
+      elderlyName={elderly.name}
+    />
     
-    {/* Assignment Manage Modal */}
-    {showManageModal && (
-      <AssignmentManageModal
-        isOpen={showManageModal}
-        onClose={handleCloseManageModal}
-        elderlyId={elderly.id}
-        elderlyName={elderly.name}
-        onAssignmentChanged={handleAssignmentChanged}
-      />
-    )}
+    {/* Assign Caregiver Modal */}
+    <AssignCaregiverModal
+      isOpen={showManageModal}
+      onClose={handleCloseManageModal}
+      elderlyId={elderly.id}
+      elderlyName={elderly.name}
+      onAssignmentChanged={handleAssignmentChanged}
+    />
+    
+    {/* Add Task Modal */}
+    <AddTaskModal
+      isOpen={showTaskModal}
+      onClose={handleCloseTaskModal}
+      onTaskAdded={handleTaskAdded}
+      elderlyId={elderly.id}
+      elderlyName={elderly.name}
+    />
+    
+    {/* View Tasks Modal */}
+    <ViewTasksModal
+      isOpen={showViewTasksModal}
+      onClose={handleCloseViewTasksModal}
+      elderlyId={elderly.id}
+      elderlyName={elderly.name}
+      tasks={elderly.tasks}
+    />
+    
+    {/* Add Medication Modal */}
+    <AddMedicationModal
+      isOpen={showMedicationModal}
+      onClose={handleCloseMedicationModal}
+      onMedicationAdded={handleMedicationAdded}
+      elderlyId={elderly.id}
+      elderlyName={elderly.name}
+    />
+    
+    {/* View Medications Modal */}
+    <ViewMedicationsModal
+      isOpen={showViewMedicationsModal}
+      onClose={handleCloseViewMedicationsModal}
+      elderlyId={elderly.id}
+      elderlyName={elderly.name}
+      medications={elderly.medications}
+    />
     </>
   );
 };

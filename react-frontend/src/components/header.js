@@ -51,8 +51,6 @@ function Header() {
           <nav className="hidden md:flex space-x-6">
             <a href="/caregiver-dashboard" className="hover:text-blue-200 transition-colors">Caregiver Dashboard</a>
             <a href="/elder-dashboard" className="hover:text-blue-200 transition-colors">Elder Dashboard</a>
-            <a href="/manage-caregivers" className="hover:text-blue-200 transition-colors">Manage Caregivers</a>
-            <a href="/manage-elderly" className="hover:text-blue-200 transition-colors">Manage Elderly</a>
           </nav>
 
           {/* Right Side */}
@@ -119,8 +117,6 @@ function Header() {
             <div className="flex flex-col space-y-3 pt-4">
               <a href="/caregiver-dashboard" className="hover:text-blue-200 transition-colors py-2">Caregiver Dashboard</a>
               <a href="/elder-dashboard" className="hover:text-blue-200 transition-colors py-2">Elder Dashboard</a>
-              <a href="/manage-caregivers" className="hover:text-blue-200 transition-colors py-2">Manage Caregivers</a>
-              <a href="/manage-elderly" className="hover:text-blue-200 transition-colors py-2">Manage Elderly</a>
               
               {/* Mobile Auth Buttons */}
               <div className="pt-4 border-t border-blue-500">

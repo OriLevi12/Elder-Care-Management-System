@@ -88,7 +88,12 @@ function ElderlyDashboard() {
         </button>
       </div>
 
-      <ElderlyTable elderly={elderly} onDelete={handleDeleteElderly} />
+      <ElderlyTable 
+        elderly={elderly} 
+        onDelete={handleDeleteElderly}
+        onTaskAdded={handleElderlyAdded}
+        onMedicationAdded={handleElderlyAdded}
+      />
       
       {/* Add Elderly Modal */}
       <AddElderlyModal
