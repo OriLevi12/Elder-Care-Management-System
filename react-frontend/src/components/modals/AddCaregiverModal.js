@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { elderlyService } from '../services/elderlyService';
+import { caregiverService } from '../../services/caregiverService';
 
 /**
- * Modal component for adding a new medication to an elderly person
+ * Modal component for adding a new caregiver
  */
-const AddMedicationModal = ({ isOpen, onClose, onMedicationAdded, elderlyId, elderlyName }) => {
+const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
   const [formData, setFormData] = useState({
+    custom_id: '',
     name: '',
-    dosage: '',
-    frequency: ''
+    bank_name: '',
+    bank_account: '',
+    branch_number: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -25,7 +27,7 @@ const AddMedicationModal = ({ isOpen, onClose, onMedicationAdded, elderlyId, eld
     e.preventDefault();
     
     // Basic validation
-    if (!formData.name.trim() || !formData.dosage.trim() || !formData.frequency.trim()) {
+    if (!formData.custom_id || !formData.name || !formData.bank_name || !formData.bank_account || !formData.branch_number) {
       setError('All fields are required');
       return;
     }
@@ -34,25 +36,29 @@ const AddMedicationModal = ({ isOpen, onClose, onMedicationAdded, elderlyId, eld
       setLoading(true);
       setError(null);
       
-      await elderlyService.addMedication(elderlyId, {
-        name: formData.name.trim(),
-        dosage: formData.dosage.trim(),
-        frequency: formData.frequency.trim()
-      });
+      // Convert custom_id to number
+      const caregiverData = {
+        ...formData,
+        custom_id: parseInt(formData.custom_id)
+      };
+      
+      await caregiverService.addCaregiver(caregiverData);
       
       // Reset form and close modal
       setFormData({
+        custom_id: '',
         name: '',
-        dosage: '',
-        frequency: ''
+        bank_name: '',
+        bank_account: '',
+        branch_number: ''
       });
       
-      onMedicationAdded(); // Refresh the elderly list
+      onCaregiverAdded(); // Refresh the caregiver list
       onClose();
       
     } catch (err) {
-      setError(err.message || 'Failed to add medication');
-      console.error('Error adding medication:', err);
+      setError(err.message || 'Failed to add caregiver');
+      console.error('Error adding caregiver:', err);
     } finally {
       setLoading(false);
     }
@@ -60,9 +66,11 @@ const AddMedicationModal = ({ isOpen, onClose, onMedicationAdded, elderlyId, eld
 
   const handleClose = () => {
     setFormData({
+      custom_id: '',
       name: '',
-      dosage: '',
-      frequency: ''
+      bank_name: '',
+      bank_account: '',
+      branch_number: ''
     });
     setError(null);
     onClose();
@@ -76,12 +84,7 @@ const AddMedicationModal = ({ isOpen, onClose, onMedicationAdded, elderlyId, eld
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800">Add New Medication</h2>
-              {elderlyName && (
-                <p className="text-sm text-gray-500 mt-1">For: {elderlyName}</p>
-              )}
-            </div>
+            <h2 className="text-xl font-semibold text-gray-800">Add New Caregiver</h2>
             <button
               onClick={handleClose}
               className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -94,10 +97,26 @@ const AddMedicationModal = ({ isOpen, onClose, onMedicationAdded, elderlyId, eld
         {/* Form */}
         <form onSubmit={handleSubmit} className="px-6 py-4">
           <div className="space-y-4">
-            {/* Medication Name */}
+            {/* Custom ID */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Medication Name *
+                Caregiver ID *
+              </label>
+              <input
+                type="number"
+                name="custom_id"
+                value={formData.custom_id}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Enter caregiver ID"
+                required
+              />
+            </div>
+
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Full Name *
               </label>
               <input
                 type="text"
@@ -105,39 +124,55 @@ const AddMedicationModal = ({ isOpen, onClose, onMedicationAdded, elderlyId, eld
                 value={formData.name}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="e.g., Aspirin"
+                placeholder="Enter full name"
                 required
               />
             </div>
 
-            {/* Dosage */}
+            {/* Bank Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Dosage *
+                Bank Name *
               </label>
               <input
                 type="text"
-                name="dosage"
-                value={formData.dosage}
+                name="bank_name"
+                value={formData.bank_name}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="e.g., 500mg"
+                placeholder="Enter bank name"
                 required
               />
             </div>
 
-            {/* Frequency */}
+            {/* Bank Account */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Frequency *
+                Bank Account *
               </label>
               <input
                 type="text"
-                name="frequency"
-                value={formData.frequency}
+                name="bank_account"
+                value={formData.bank_account}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="e.g., Once a day"
+                placeholder="Enter bank account number"
+                required
+              />
+            </div>
+
+            {/* Branch Number */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Branch Number *
+              </label>
+              <input
+                type="text"
+                name="branch_number"
+                value={formData.branch_number}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Enter branch number"
                 required
               />
             </div>
@@ -164,7 +199,7 @@ const AddMedicationModal = ({ isOpen, onClose, onMedicationAdded, elderlyId, eld
               disabled={loading}
               className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {loading ? 'Adding...' : 'Add Medication'}
+              {loading ? 'Adding...' : 'Add Caregiver'}
             </button>
           </div>
         </form>
@@ -173,5 +208,4 @@ const AddMedicationModal = ({ isOpen, onClose, onMedicationAdded, elderlyId, eld
   );
 };
 
-export default AddMedicationModal;
-
+export default AddCaregiverModal;

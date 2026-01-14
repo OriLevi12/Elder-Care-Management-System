@@ -1,5 +1,5 @@
 import React from 'react';
-import CaregiverCard from './CaregiverCard';
+import CaregiverCard from '../cards/CaregiverCard';
 
 /**
  * Table component for displaying caregivers data

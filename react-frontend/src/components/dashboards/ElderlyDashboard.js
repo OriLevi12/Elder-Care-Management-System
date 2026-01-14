@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import DashboardHeader from './DashboardHeader';
-import ElderlyTable from './ElderlyTable';
-import AddElderlyModal from './AddElderlyModal';
-import { elderlyService } from '../services/elderlyService';
+import ElderlyTable from '../tables/ElderlyTable';
+import AddElderlyModal from '../modals/AddElderlyModal';
+import { elderlyService } from '../../services/elderlyService';
 
 /**
  * Main Elderly Dashboard component

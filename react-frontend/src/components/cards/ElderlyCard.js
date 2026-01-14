@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { getInitials } from '../utils/formatters';
-import AssignmentModal from './AssignmentModal';
-import AssignmentManageModal from './AssignmentManageModal';
-import AssignCaregiverModal from './AssignCaregiverModal';
-import DeleteElderlyModal from './DeleteElderlyModal';
-import AddTaskModal from './AddTaskModal';
-import ViewTasksModal from './ViewTasksModal';
-import AddMedicationModal from './AddMedicationModal';
-import ViewMedicationsModal from './ViewMedicationsModal';
-import ViewCaregiversModal from './ViewCaregiversModal';
+import { getInitials } from '../../utils/formatters';
+import AssignCaregiverModal from '../modals/AssignCaregiverModal';
+import DeleteElderlyModal from '../modals/DeleteElderlyModal';
+import AddTaskModal from '../modals/AddTaskModal';
+import ViewTasksModal from '../modals/ViewTasksModal';
+import AddMedicationModal from '../modals/AddMedicationModal';
+import ViewMedicationsModal from '../modals/ViewMedicationsModal';
+import ViewCaregiversModal from '../modals/ViewCaregiversModal';
 
 /**
  * Individual elderly row component

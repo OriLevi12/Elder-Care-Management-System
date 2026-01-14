@@ -1,47 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import assignmentService from '../services/assignmentService';
-import { caregiverService } from '../services/caregiverService';
+import assignmentService from '../../services/assignmentService';
 
-/**
- * Modal component for assigning caregivers to an elderly person
- */
-const AssignCaregiverModal = ({ isOpen, onClose, elderlyId, elderlyName, onAssignmentChanged }) => {
-  const [assignedCaregivers, setAssignedCaregivers] = useState([]);
-  const [allCaregivers, setAllCaregivers] = useState([]);
+const AssignmentManageModal = ({ isOpen, onClose, caregiverId, caregiverName, onAssignmentChanged }) => {
+  const [assignedElderly, setAssignedElderly] = useState([]);
+  const [allElderly, setAllElderly] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedCaregiverId, setSelectedCaregiverId] = useState('');
+  const [selectedElderlyId, setSelectedElderlyId] = useState('');
   const [isAssigning, setIsAssigning] = useState(false);
   const [isRemoving, setIsRemoving] = useState(null);
 
   useEffect(() => {
-    if (isOpen && elderlyId) {
+    if (isOpen && caregiverId) {
       fetchData();
     }
-  }, [isOpen, elderlyId]);
+  }, [isOpen, caregiverId]);
 
   const fetchData = async () => {
     setLoading(true);
     setError(null);
     
     try {
-      // Fetch both assigned caregivers and all caregivers with assignment status
-      const [assigned, allCaregiversList] = await Promise.all([
-        assignmentService.getCaregiversForElderly(elderlyId),
-        caregiverService.getCaregivers()
+      // Fetch both assigned elderly and all elderly with assignment status
+      const [assigned, allElderlyWithStatus] = await Promise.all([
+        assignmentService.getElderlyForCaregiver(caregiverId),
+        assignmentService.getAllElderlyForAssignment(caregiverId)
       ]);
-
-      // Get IDs of caregivers already assigned to this elderly person
-      const assignedCaregiverIds = assigned.map(caregiver => caregiver.id);
-
-      // Add assignment status to each caregiver
-      const caregiversWithStatus = allCaregiversList.map(caregiver => ({
-        ...caregiver,
-        isAssignedToThisElderly: assignedCaregiverIds.includes(caregiver.id)
-      }));
       
-      setAssignedCaregivers(assigned);
-      setAllCaregivers(caregiversWithStatus);
+      setAssignedElderly(assigned);
+      setAllElderly(allElderlyWithStatus);
     } catch (err) {
       console.error('Error fetching assignment data:', err);
       setError(err.message || 'Failed to load assignment data');
@@ -50,12 +37,12 @@ const AssignCaregiverModal = ({ isOpen, onClose, elderlyId, elderlyName, onAssig
     }
   };
 
-  const handleAssignCaregiver = async () => {
-    if (!selectedCaregiverId) return;
+  const handleAssignElderly = async () => {
+    if (!selectedElderlyId) return;
     
     setIsAssigning(true);
     try {
-      await assignmentService.createAssignment(parseInt(selectedCaregiverId), elderlyId);
+      await assignmentService.createAssignment(caregiverId, parseInt(selectedElderlyId));
       
       // Refresh data
       await fetchData();
@@ -66,17 +53,17 @@ const AssignCaregiverModal = ({ isOpen, onClose, elderlyId, elderlyName, onAssig
       }
       
       // Reset selection
-      setSelectedCaregiverId('');
+      setSelectedElderlyId('');
     } catch (err) {
-      console.error('Error assigning caregiver:', err);
-      setError(err.message || 'Failed to assign caregiver');
+      console.error('Error assigning elderly:', err);
+      setError(err.message || 'Failed to assign elderly');
     } finally {
       setIsAssigning(false);
     }
   };
 
-  const handleRemoveAssignment = async (caregiverId) => {
-    setIsRemoving(caregiverId);
+  const handleRemoveAssignment = async (elderlyId) => {
+    setIsRemoving(elderlyId);
     try {
       await assignmentService.deleteAssignment(caregiverId, elderlyId);
       
@@ -96,10 +83,10 @@ const AssignCaregiverModal = ({ isOpen, onClose, elderlyId, elderlyName, onAssig
   };
 
   const handleClose = () => {
-    setAssignedCaregivers([]);
-    setAllCaregivers([]);
+    setAssignedElderly([]);
+    setAllElderly([]);
     setError(null);
-    setSelectedCaregiverId('');
+    setSelectedElderlyId('');
     onClose();
   };
 
@@ -112,10 +99,10 @@ const AssignCaregiverModal = ({ isOpen, onClose, elderlyId, elderlyName, onAssig
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">
-              Assign Caregivers to {elderlyName}
+              Manage Assignments for {caregiverName}
             </h2>
             <p className="text-sm text-gray-600 mt-1">
-              Add or remove caregiver assignments
+              Add or remove elderly assignments
             </p>
           </div>
           <button
@@ -155,42 +142,42 @@ const AssignCaregiverModal = ({ isOpen, onClose, elderlyId, elderlyName, onAssig
               {/* Currently Assigned */}
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Currently Assigned ({assignedCaregivers.length})
+                  Currently Assigned ({assignedElderly.length})
                 </h3>
-                {assignedCaregivers.length === 0 ? (
+                {assignedElderly.length === 0 ? (
                   <div className="text-center py-8 bg-gray-50 rounded-lg">
                     <div className="text-gray-400 mb-2">
                       <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
                     </div>
-                    <p className="text-gray-600 text-sm">No caregivers assigned</p>
+                    <p className="text-gray-600 text-sm">No elderly assigned</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {assignedCaregivers.map((caregiver) => (
+                    {assignedElderly.map((person) => (
                       <div
-                        key={caregiver.id}
+                        key={person.id}
                         className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center justify-between"
                       >
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                             <span className="text-green-600 font-semibold text-xs">
-                              {caregiver.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                              {person.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                             </span>
                           </div>
                           <div>
-                            <h4 className="font-medium text-gray-900">{caregiver.name}</h4>
-                            <p className="text-sm text-gray-600">ID: {caregiver.custom_id || caregiver.id}</p>
+                            <h4 className="font-medium text-gray-900">{person.name}</h4>
+                            <p className="text-sm text-gray-600">ID: {person.custom_id}</p>
                           </div>
                         </div>
                         <button
-                          onClick={() => handleRemoveAssignment(caregiver.id)}
-                          disabled={isRemoving === caregiver.id}
+                          onClick={() => handleRemoveAssignment(person.id)}
+                          disabled={isRemoving === person.id}
                           className="p-2 text-red-600 hover:bg-red-100 rounded-md border border-gray-300 hover:border-red-300 disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Remove assignment"
                         >
-                          {isRemoving === caregiver.id ? (
+                          {isRemoving === person.id ? (
                             <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
@@ -211,42 +198,42 @@ const AssignCaregiverModal = ({ isOpen, onClose, elderlyId, elderlyName, onAssig
                 <h3 className="text-lg font-medium text-gray-900 mb-4">
                   Add New Assignment
                 </h3>
-                {allCaregivers.length === 0 ? (
+                {allElderly.length === 0 ? (
                   <div className="text-center py-8 bg-gray-50 rounded-lg">
                     <div className="text-gray-400 mb-2">
                       <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
                     </div>
-                    <p className="text-gray-600 text-sm">No caregivers available</p>
+                    <p className="text-gray-600 text-sm">No elderly available</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Select Caregiver to Assign
+                        Select Elderly to Assign
                       </label>
                       <select
-                        value={selectedCaregiverId}
-                        onChange={(e) => setSelectedCaregiverId(e.target.value)}
+                        value={selectedElderlyId}
+                        onChange={(e) => setSelectedElderlyId(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                       >
-                        <option value="">Choose a caregiver...</option>
-                        {allCaregivers.map((caregiver) => (
+                        <option value="">Choose an elderly person...</option>
+                        {allElderly.map((person) => (
                           <option 
-                            key={caregiver.id} 
-                            value={caregiver.id}
-                            disabled={caregiver.isAssignedToThisElderly}
+                            key={person.id} 
+                            value={person.id}
+                            disabled={person.isAssignedToThisCaregiver}
                           >
-                            {caregiver.name} (ID: {caregiver.custom_id || caregiver.id})
-                            {caregiver.isAssignedToThisElderly ? ' - Already assigned' : ''}
+                            {person.name} (ID: {person.custom_id})
+                            {person.isAssignedToThisCaregiver ? ' - Already assigned' : ''}
                           </option>
                         ))}
                       </select>
                     </div>
                     <button
-                      onClick={handleAssignCaregiver}
-                      disabled={!selectedCaregiverId || isAssigning || allCaregivers.find(c => c.id === parseInt(selectedCaregiverId))?.isAssignedToThisElderly}
+                      onClick={handleAssignElderly}
+                      disabled={!selectedElderlyId || isAssigning || allElderly.find(p => p.id === parseInt(selectedElderlyId))?.isAssignedToThisCaregiver}
                       className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                     >
                       {isAssigning ? (
@@ -261,7 +248,7 @@ const AssignCaregiverModal = ({ isOpen, onClose, elderlyId, elderlyName, onAssig
                           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                           </svg>
-                          Assign Caregiver
+                          Assign Elderly
                         </>
                       )}
                     </button>
@@ -286,5 +273,4 @@ const AssignCaregiverModal = ({ isOpen, onClose, elderlyId, elderlyName, onAssig
   );
 };
 
-export default AssignCaregiverModal;
-
+export default AssignmentManageModal;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import DashboardHeader from './DashboardHeader';
-import CaregiverTable from './CaregiverTable';
-import AddCaregiverModal from './AddCaregiverModal';
-import { caregiverService } from '../services/caregiverService';
+import CaregiverTable from '../tables/CaregiverTable';
+import AddCaregiverModal from '../modals/AddCaregiverModal';
+import { caregiverService } from '../../services/caregiverService';
 
 /**
  * Main Caregivers Dashboard component

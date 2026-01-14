@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { caregiverService } from '../services/caregiverService';
+import { elderlyService } from '../../services/elderlyService';
 
 /**
- * Modal component for adding a new caregiver
+ * Modal component for adding a new elderly person
  */
-const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
+const AddElderlyModal = ({ isOpen, onClose, onElderlyAdded }) => {
   const [formData, setFormData] = useState({
     custom_id: '',
-    name: '',
-    bank_name: '',
-    bank_account: '',
-    branch_number: ''
+    name: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -27,7 +24,7 @@ const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
     e.preventDefault();
     
     // Basic validation
-    if (!formData.custom_id || !formData.name || !formData.bank_name || !formData.bank_account || !formData.branch_number) {
+    if (!formData.custom_id || !formData.name) {
       setError('All fields are required');
       return;
     }
@@ -37,28 +34,25 @@ const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
       setError(null);
       
       // Convert custom_id to number
-      const caregiverData = {
+      const elderlyData = {
         ...formData,
         custom_id: parseInt(formData.custom_id)
       };
       
-      await caregiverService.addCaregiver(caregiverData);
+      await elderlyService.addElderly(elderlyData);
       
       // Reset form and close modal
       setFormData({
         custom_id: '',
-        name: '',
-        bank_name: '',
-        bank_account: '',
-        branch_number: ''
+        name: ''
       });
       
-      onCaregiverAdded(); // Refresh the caregiver list
+      onElderlyAdded(); // Refresh the elderly list
       onClose();
       
     } catch (err) {
-      setError(err.message || 'Failed to add caregiver');
-      console.error('Error adding caregiver:', err);
+      setError(err.message || 'Failed to add elderly');
+      console.error('Error adding elderly:', err);
     } finally {
       setLoading(false);
     }
@@ -67,10 +61,7 @@ const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
   const handleClose = () => {
     setFormData({
       custom_id: '',
-      name: '',
-      bank_name: '',
-      bank_account: '',
-      branch_number: ''
+      name: ''
     });
     setError(null);
     onClose();
@@ -84,7 +75,7 @@ const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-800">Add New Caregiver</h2>
+            <h2 className="text-xl font-semibold text-gray-800">Add New Elderly</h2>
             <button
               onClick={handleClose}
               className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -100,7 +91,7 @@ const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
             {/* Custom ID */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Caregiver ID *
+                Elderly ID *
               </label>
               <input
                 type="number"
@@ -108,7 +99,7 @@ const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
                 value={formData.custom_id}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter caregiver ID"
+                placeholder="Enter elderly ID"
                 required
               />
             </div>
@@ -125,54 +116,6 @@ const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 placeholder="Enter full name"
-                required
-              />
-            </div>
-
-            {/* Bank Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Bank Name *
-              </label>
-              <input
-                type="text"
-                name="bank_name"
-                value={formData.bank_name}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter bank name"
-                required
-              />
-            </div>
-
-            {/* Bank Account */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Bank Account *
-              </label>
-              <input
-                type="text"
-                name="bank_account"
-                value={formData.bank_account}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter bank account number"
-                required
-              />
-            </div>
-
-            {/* Branch Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Branch Number *
-              </label>
-              <input
-                type="text"
-                name="branch_number"
-                value={formData.branch_number}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter branch number"
                 required
               />
             </div>
@@ -199,7 +142,7 @@ const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
               disabled={loading}
               className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {loading ? 'Adding...' : 'Add Caregiver'}
+              {loading ? 'Adding...' : 'Add Elderly'}
             </button>
           </div>
         </form>
@@ -208,4 +151,4 @@ const AddCaregiverModal = ({ isOpen, onClose, onCaregiverAdded }) => {
   );
 };
 
-export default AddCaregiverModal;
+export default AddElderlyModal;

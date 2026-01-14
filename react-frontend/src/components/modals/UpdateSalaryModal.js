@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { caregiverService } from '../services/caregiverService';
+import { caregiverService } from '../../services/caregiverService';
 
 const UpdateSalaryModal = ({ caregiver, isOpen, onClose, onSalaryUpdated }) => {
   const [formData, setFormData] = useState({

@@ -1,11 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import Header from './components/header';
-import CaregiversDashboard from './components/CaregiversDashboard';
-import ElderlyDashboard from './components/ElderlyDashboard';
-import Login from './components/Login';
-import Register from './components/Register';
+import Header from './components/common/header';
+import CaregiversDashboard from './components/dashboards/CaregiversDashboard';
+import ElderlyDashboard from './components/dashboards/ElderlyDashboard';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
 import ProtectedRoute from './guards/ProtectedRoute';
 
 function App() {

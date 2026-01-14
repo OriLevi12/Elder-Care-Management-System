@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import assignmentService from '../services/assignmentService';
+import assignmentService from '../../services/assignmentService';
 
 /**
  * Modal component for viewing caregivers assigned to an elderly person

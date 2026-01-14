@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { elderlyService } from '../services/elderlyService';
+import { elderlyService } from '../../services/elderlyService';
 
 /**
- * Modal component for adding a new task to an elderly person
+ * Modal component for adding a new medication to an elderly person
  */
-const AddTaskModal = ({ isOpen, onClose, onTaskAdded, elderlyId, elderlyName }) => {
+const AddMedicationModal = ({ isOpen, onClose, onMedicationAdded, elderlyId, elderlyName }) => {
   const [formData, setFormData] = useState({
-    description: '',
-    status: 'pending'
+    name: '',
+    dosage: '',
+    frequency: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -24,8 +25,8 @@ const AddTaskModal = ({ isOpen, onClose, onTaskAdded, elderlyId, elderlyName }) 
     e.preventDefault();
     
     // Basic validation
-    if (!formData.description.trim()) {
-      setError('Task description is required');
+    if (!formData.name.trim() || !formData.dosage.trim() || !formData.frequency.trim()) {
+      setError('All fields are required');
       return;
     }
 
@@ -33,23 +34,25 @@ const AddTaskModal = ({ isOpen, onClose, onTaskAdded, elderlyId, elderlyName }) 
       setLoading(true);
       setError(null);
       
-      await elderlyService.addTask(elderlyId, {
-        description: formData.description.trim(),
-        status: formData.status
+      await elderlyService.addMedication(elderlyId, {
+        name: formData.name.trim(),
+        dosage: formData.dosage.trim(),
+        frequency: formData.frequency.trim()
       });
       
       // Reset form and close modal
       setFormData({
-        description: '',
-        status: 'pending'
+        name: '',
+        dosage: '',
+        frequency: ''
       });
       
-      onTaskAdded(); // Refresh the elderly list
+      onMedicationAdded(); // Refresh the elderly list
       onClose();
       
     } catch (err) {
-      setError(err.message || 'Failed to add task');
-      console.error('Error adding task:', err);
+      setError(err.message || 'Failed to add medication');
+      console.error('Error adding medication:', err);
     } finally {
       setLoading(false);
     }
@@ -57,8 +60,9 @@ const AddTaskModal = ({ isOpen, onClose, onTaskAdded, elderlyId, elderlyName }) 
 
   const handleClose = () => {
     setFormData({
-      description: '',
-      status: 'pending'
+      name: '',
+      dosage: '',
+      frequency: ''
     });
     setError(null);
     onClose();
@@ -73,7 +77,7 @@ const AddTaskModal = ({ isOpen, onClose, onTaskAdded, elderlyId, elderlyName }) 
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">Add New Task</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Add New Medication</h2>
               {elderlyName && (
                 <p className="text-sm text-gray-500 mt-1">For: {elderlyName}</p>
               )}
@@ -90,37 +94,52 @@ const AddTaskModal = ({ isOpen, onClose, onTaskAdded, elderlyId, elderlyName }) 
         {/* Form */}
         <form onSubmit={handleSubmit} className="px-6 py-4">
           <div className="space-y-4">
-            {/* Description */}
+            {/* Medication Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Task Description *
+                Medication Name *
               </label>
-              <textarea
-                name="description"
-                value={formData.description}
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter task description"
-                rows="3"
+                placeholder="e.g., Aspirin"
                 required
               />
             </div>
 
-            {/* Status */}
+            {/* Dosage */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
+                Dosage *
               </label>
-              <select
-                name="status"
-                value={formData.status}
+              <input
+                type="text"
+                name="dosage"
+                value={formData.dosage}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-              </select>
+                placeholder="e.g., 500mg"
+                required
+              />
+            </div>
+
+            {/* Frequency */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Frequency *
+              </label>
+              <input
+                type="text"
+                name="frequency"
+                value={formData.frequency}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="e.g., Once a day"
+                required
+              />
             </div>
           </div>
 
@@ -145,7 +164,7 @@ const AddTaskModal = ({ isOpen, onClose, onTaskAdded, elderlyId, elderlyName }) 
               disabled={loading}
               className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {loading ? 'Adding...' : 'Add Task'}
+              {loading ? 'Adding...' : 'Add Medication'}
             </button>
           </div>
         </form>
@@ -154,5 +173,5 @@ const AddTaskModal = ({ isOpen, onClose, onTaskAdded, elderlyId, elderlyName }) 
   );
 };
 
-export default AddTaskModal;
+export default AddMedicationModal;
 

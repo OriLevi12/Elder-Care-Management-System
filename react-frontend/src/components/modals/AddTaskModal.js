@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { elderlyService } from '../services/elderlyService';
+import { elderlyService } from '../../services/elderlyService';
 
 /**
- * Modal component for adding a new elderly person
+ * Modal component for adding a new task to an elderly person
  */
-const AddElderlyModal = ({ isOpen, onClose, onElderlyAdded }) => {
+const AddTaskModal = ({ isOpen, onClose, onTaskAdded, elderlyId, elderlyName }) => {
   const [formData, setFormData] = useState({
-    custom_id: '',
-    name: ''
+    description: '',
+    status: 'pending'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -24,8 +24,8 @@ const AddElderlyModal = ({ isOpen, onClose, onElderlyAdded }) => {
     e.preventDefault();
     
     // Basic validation
-    if (!formData.custom_id || !formData.name) {
-      setError('All fields are required');
+    if (!formData.description.trim()) {
+      setError('Task description is required');
       return;
     }
 
@@ -33,26 +33,23 @@ const AddElderlyModal = ({ isOpen, onClose, onElderlyAdded }) => {
       setLoading(true);
       setError(null);
       
-      // Convert custom_id to number
-      const elderlyData = {
-        ...formData,
-        custom_id: parseInt(formData.custom_id)
-      };
-      
-      await elderlyService.addElderly(elderlyData);
+      await elderlyService.addTask(elderlyId, {
+        description: formData.description.trim(),
+        status: formData.status
+      });
       
       // Reset form and close modal
       setFormData({
-        custom_id: '',
-        name: ''
+        description: '',
+        status: 'pending'
       });
       
-      onElderlyAdded(); // Refresh the elderly list
+      onTaskAdded(); // Refresh the elderly list
       onClose();
       
     } catch (err) {
-      setError(err.message || 'Failed to add elderly');
-      console.error('Error adding elderly:', err);
+      setError(err.message || 'Failed to add task');
+      console.error('Error adding task:', err);
     } finally {
       setLoading(false);
     }
@@ -60,8 +57,8 @@ const AddElderlyModal = ({ isOpen, onClose, onElderlyAdded }) => {
 
   const handleClose = () => {
     setFormData({
-      custom_id: '',
-      name: ''
+      description: '',
+      status: 'pending'
     });
     setError(null);
     onClose();
@@ -75,7 +72,12 @@ const AddElderlyModal = ({ isOpen, onClose, onElderlyAdded }) => {
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-800">Add New Elderly</h2>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800">Add New Task</h2>
+              {elderlyName && (
+                <p className="text-sm text-gray-500 mt-1">For: {elderlyName}</p>
+              )}
+            </div>
             <button
               onClick={handleClose}
               className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -88,36 +90,37 @@ const AddElderlyModal = ({ isOpen, onClose, onElderlyAdded }) => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="px-6 py-4">
           <div className="space-y-4">
-            {/* Custom ID */}
+            {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Elderly ID *
+                Task Description *
               </label>
-              <input
-                type="number"
-                name="custom_id"
-                value={formData.custom_id}
+              <textarea
+                name="description"
+                value={formData.description}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter elderly ID"
+                placeholder="Enter task description"
+                rows="3"
                 required
               />
             </div>
 
-            {/* Name */}
+            {/* Status */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name *
+                Status
               </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
+              <select
+                name="status"
+                value={formData.status}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter full name"
-                required
-              />
+              >
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
             </div>
           </div>
 
@@ -142,7 +145,7 @@ const AddElderlyModal = ({ isOpen, onClose, onElderlyAdded }) => {
               disabled={loading}
               className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {loading ? 'Adding...' : 'Add Elderly'}
+              {loading ? 'Adding...' : 'Add Task'}
             </button>
           </div>
         </form>
@@ -151,4 +154,5 @@ const AddElderlyModal = ({ isOpen, onClose, onElderlyAdded }) => {
   );
 };
 
-export default AddElderlyModal;
+export default AddTaskModal;
+

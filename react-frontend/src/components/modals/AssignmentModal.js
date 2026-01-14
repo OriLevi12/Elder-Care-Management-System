@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import assignmentService from '../services/assignmentService';
+import assignmentService from '../../services/assignmentService';
 
 const AssignmentModal = ({ isOpen, onClose, caregiverId, caregiverName, onAssignmentChanged }) => {
   const [elderly, setElderly] = useState([]);

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { formatCurrency, getInitials } from '../utils/formatters';
-import UpdateSalaryModal from './UpdateSalaryModal';
-import AssignmentModal from './AssignmentModal';
-import AssignmentManageModal from './AssignmentManageModal';
+import { formatCurrency, getInitials } from '../../utils/formatters';
+import UpdateSalaryModal from '../modals/UpdateSalaryModal';
+import AssignmentModal from '../modals/AssignmentModal';
+import AssignmentManageModal from '../modals/AssignmentManageModal';
 
 /**
  * Individual caregiver row component

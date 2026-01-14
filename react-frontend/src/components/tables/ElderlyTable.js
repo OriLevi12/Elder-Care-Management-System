@@ -1,5 +1,5 @@
 import React from 'react';
-import ElderlyCard from './ElderlyCard';
+import ElderlyCard from '../cards/ElderlyCard';
 
 /**
  * Table component for displaying elderly data
