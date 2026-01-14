@@ -10,12 +10,19 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get the redirect path from location state, default to dashboard
-  const from = location.state?.from?.pathname || '/caregiver-dashboard';
+  // Get the redirect path from location state, default to home
+  const from = location.state?.from?.pathname || '/';
+
+  useEffect(() => {
+    // Redirect if already authenticated
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     // Check if there's a success message from registration

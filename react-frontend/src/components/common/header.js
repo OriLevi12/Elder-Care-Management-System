@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 function Header() {
@@ -49,8 +49,9 @@ function Header() {
 
           {/* Desktop Navigation - Hidden on Mobile */}
           <nav className="hidden md:flex space-x-6">
-            <a href="/caregiver-dashboard" className="hover:text-blue-200 transition-colors">Caregiver Dashboard</a>
-            <a href="/elder-dashboard" className="hover:text-blue-200 transition-colors">Elder Dashboard</a>
+            <Link to="/" className="hover:text-blue-200 transition-colors">Home</Link>
+            <Link to="/caregiver-dashboard" className="hover:text-blue-200 transition-colors">Caregiver Dashboard</Link>
+            <Link to="/elder-dashboard" className="hover:text-blue-200 transition-colors">Elder Dashboard</Link>
           </nav>
 
           {/* Right Side */}
@@ -115,8 +116,9 @@ function Header() {
         {isMobileMenuOpen && (
           <nav className="md:hidden mt-4 pb-4 border-t border-blue-500">
             <div className="flex flex-col space-y-3 pt-4">
-              <a href="/caregiver-dashboard" className="hover:text-blue-200 transition-colors py-2">Caregiver Dashboard</a>
-              <a href="/elder-dashboard" className="hover:text-blue-200 transition-colors py-2">Elder Dashboard</a>
+              <Link to="/" className="hover:text-blue-200 transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
+              <Link to="/caregiver-dashboard" className="hover:text-blue-200 transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>Caregiver Dashboard</Link>
+              <Link to="/elder-dashboard" className="hover:text-blue-200 transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>Elder Dashboard</Link>
               
               {/* Mobile Auth Buttons */}
               <div className="pt-4 border-t border-blue-500">
