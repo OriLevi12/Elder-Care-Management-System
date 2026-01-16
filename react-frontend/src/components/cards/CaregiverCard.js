@@ -16,9 +16,10 @@ const CaregiverCard = ({ caregiver, onDelete, onGeneratePDF, onUpdateSalary, onA
   const [showManageModal, setShowManageModal] = useState(false);
   
   // Map backend data structure to display format
-  const baseSalary = caregiver.salary?.price || 0;
-  const totalAllowance = caregiver.allowance?.price || 0;
-  const totalSaturdayPay = caregiver.saturday?.price || 0;
+  // Use the 'total' field if available (already calculated as price * amount), otherwise calculate it
+  const baseSalary = caregiver.salary?.total ?? (caregiver.salary?.price || 0) * (caregiver.salary?.amount || 0);
+  const totalAllowance = caregiver.allowance?.total ?? (caregiver.allowance?.price || 0) * (caregiver.allowance?.amount || 0);
+  const totalSaturdayPay = caregiver.saturday?.total ?? (caregiver.saturday?.price || 0) * (caregiver.saturday?.amount || 0);
   const totalSalary = baseSalary + totalAllowance + totalSaturdayPay;
   const assignedElderly = caregiver.assignments?.length || 0;
 
