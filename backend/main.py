@@ -19,14 +19,25 @@ app = FastAPI(
 # Allow origins from environment variable or default to localhost for development
 # In production, set ALLOWED_ORIGINS to include your frontend URL (e.g., "https://your-app.vercel.app")
 allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
-allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",") if origin.strip()]
+
+# If ALLOWED_ORIGINS is "*", allow all origins (but can't use credentials)
+if "*" in allowed_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allowed_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 app.include_router(caregivers.router, prefix="/caregivers", tags=["caregivers"])
 app.include_router(elderly.router, prefix="/elderly", tags=["elderly"])
