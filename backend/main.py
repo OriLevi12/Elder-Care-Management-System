@@ -16,9 +16,13 @@ app = FastAPI(
 )
 
 # Add CORS middleware
+# Allow origins from environment variable or default to localhost for development
+# In production, set ALLOWED_ORIGINS to include your frontend URL (e.g., "https://your-app.vercel.app")
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
+allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # React dev server
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,4 +36,3 @@ app.include_router(auth.router)
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Elder Care Management System!"}
-
