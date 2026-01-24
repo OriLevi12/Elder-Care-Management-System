@@ -12,7 +12,8 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="Elder Care Management System",
     description="A system for managing caregivers, medications, tasks, and daily operations for elderly individuals.",
-    version="1.0.0"
+    version="1.0.0",
+    redirect_slashes=False  # Disable automatic trailing slash redirects
 )
 
 # Add CORS middleware
