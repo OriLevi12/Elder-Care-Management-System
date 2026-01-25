@@ -16,7 +16,7 @@ class AssignmentService {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CAREGIVER_ASSIGNMENTS}/`, {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CAREGIVER_ASSIGNMENTS}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -198,7 +198,7 @@ class AssignmentService {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CAREGIVER_ASSIGNMENTS}/`, {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CAREGIVER_ASSIGNMENTS}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -329,7 +329,7 @@ class AssignmentService {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.ELDERLY}/`, {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.ELDERLY}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

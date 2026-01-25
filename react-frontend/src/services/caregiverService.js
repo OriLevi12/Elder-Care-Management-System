@@ -25,7 +25,7 @@ class CaregiverService {
    * @returns {Promise<Object>} Created caregiver data
    */
   async addCaregiver(caregiverData) {
-    return await authService.makeAuthenticatedRequest('/caregivers', {
+    return await authService.makeAuthenticatedRequest('/caregivers/', {
       method: 'POST',
       body: JSON.stringify(caregiverData),
     });
